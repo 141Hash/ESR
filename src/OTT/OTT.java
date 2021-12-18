@@ -50,9 +50,28 @@ public class OTT {
 		dis.close();
 		socketServidorInicial.close();
 
-
+		// Tenta ligar a outros OTTs
 		for (String vizinho : vizinhos) {
-			Socket socket = new Socket(vizinho, 8080);
+			try {
+				Socket socket = new Socket(vizinho, 8080);
+
+				ThreadOTTReceiver receiver = new ThreadOTTReceiver(dis, socket);
+				ThreadOTTSender sender = new ThreadOTTSender(socket, dos);
+				receiver.start();
+				sender.start();
+			}
+			catch (UnknownHostException u) {
+				System.out.println(u);
+			}
+			catch (IOException i) {
+				System.out.println(i);
+			}
+		}
+
+		// Se outros OTTs não estiverem ligados, ele fica à espera que se liguem a si
+		while (true) {
+			ServerSocket ss = new ServerSocket(8080);
+			Socket socket   = ss.accept();
 
 			ThreadOTTReceiver receiver = new ThreadOTTReceiver(dis, socket);
 			ThreadOTTSender sender     = new ThreadOTTSender(socket, dos);
