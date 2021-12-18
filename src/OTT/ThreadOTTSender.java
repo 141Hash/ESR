@@ -18,21 +18,18 @@ public class ThreadOTTSender extends Thread{
     public void run(){
 	int number = 0;
         while (true) {
-		try {
-        		byte[] data = "Hello\n".getBytes();
-        		dos.write(data);
-			dos.flush();
-			System.out.println("Sended " + number + "messages\n");
-			number++;
-			Thread.sleep(1000);
-    		} catch (IOException e){
-            		System.out.println(e.getMessage());
-        	} catch (InterruptedException e){
-            		System.out.println(e.getMessage());
-        	}
-
-	}
+			try {
+				byte[] data = "Hello\n".getBytes();
+				dos.write(data);
+				dos.flush();
+				System.out.println("Sended " + number + "messages\n");
+				number++;
+				Thread.sleep(1000);
+			} catch (IOException e){
+				System.out.println(e.getMessage());
+			} catch (InterruptedException e){
+				System.out.println(e.getMessage());
+			}
+		}
     }
-
-
 }

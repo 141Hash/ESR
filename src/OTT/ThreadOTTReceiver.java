@@ -18,16 +18,14 @@ public class ThreadOTTReceiver extends Thread{
     }
 
     public void run(){
-
-	String line;
+	    String line;
     	try {       
-   		while ((line = dis.readLine()) != null) {
-			System.out.println(line);
-		}
-	} catch(IOException e){
+   		    while ((line = dis.readLine()) != null) {
+			    System.out.println(line);
+		    }
+	    } catch(IOException e){
         	System.out.println(e.getMessage());
         }
-    
     }
 
 }
