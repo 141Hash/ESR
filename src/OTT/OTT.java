@@ -43,7 +43,9 @@ public class OTT {
 		String line;
 		while ((line = disServidorInicial.readLine()) != null) {
 			System.out.println("Adicionado vizinho: " + line);
-			vizinhos.add(line);
+			if (!line.equals("10.0.0.10")) {
+				vizinhos.add(line);
+			}
 		}
 
 		dosServidorInicial.close();
@@ -69,8 +71,9 @@ public class OTT {
 		}
 
 		// Se outros OTTs não estiverem ligados, ele fica à espera que se liguem a si
+		ServerSocket ss = new ServerSocket(8080);
+
 		while (true) {
-			ServerSocket ss = new ServerSocket(8080);
 			Socket socket   = ss.accept();
 
 			DataOutputStream dos = new DataOutputStream(socket.getOutputStream());

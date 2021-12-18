@@ -86,6 +86,13 @@ public class Bootstrapper {
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
             BufferedReader dis   = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+            /*
+            todo: Nest readLine podemos tentar fazer com que o Servidor receba uma mensagm de tipos:
+                    "10.0.0.1"         - interperta como uma ligação inicial que pretende receber informações sobre os vizinhos (fica como está agora)
+                    "VIZINHO$10.0.0.1" - interperta como se fosse uma ligação de um vizinho e criar threads para o mesmo e prosegguir com os passos
+
+                    Noutra maneira d epensar pode deixar-se a conexão ativada em vez de a desligar sempre, mas penso ser mais complicado
+             */
             String line = dis.readLine();
             System.out.println(line);
 
@@ -105,5 +112,11 @@ public class Bootstrapper {
             dis.close();
             socket.close();
         }
+
+        /*
+        Minha ideia para verificar a rota é servidor ir enviando pings/floods que vão crescendo e incrementando em cada nodo.
+        Deixar também informação sobre os nodos em que já passou para só fazer fowards e nunca enviar para trás uma mensagem!
+        Difícil de perceber, mas raciocínio terá de ser mais ao menos esse
+         */
     }
 }
