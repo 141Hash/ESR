@@ -32,22 +32,22 @@ public class OTT {
 
 		Socket socketServidorInicial   = new Socket(args[0], 8080);
 
-		DataOutputStream dos = new DataOutputStream(socketServidorInicial.getOutputStream());
-		BufferedReader dis   = new BufferedReader(new InputStreamReader(socketServidorInicial.getInputStream()));
+		DataOutputStream dosServidorInicial = new DataOutputStream(socketServidorInicial.getOutputStream());
+		BufferedReader disServidorInicial   = new BufferedReader(new InputStreamReader(socketServidorInicial.getInputStream()));
 
 		String ipAdress = InetAddress.getLocalHost().getHostAddress() + "\n";
 		byte[] data = ipAdress.getBytes();
-		dos.write(data);
-		dos.flush();
+		dosServidorInicial.write(data);
+		dosServidorInicial.flush();
 
 		String line;
-		while ((line = dis.readLine()) != null) {
+		while ((line = disServidorInicial.readLine()) != null) {
 			System.out.println("Adicionado vizinho: " + line);
 			vizinhos.add(line);
 		}
 
-		dos.close();
-		dis.close();
+		dosServidorInicial.close();
+		disServidorInicial.close();
 		socketServidorInicial.close();
 
 		// Tenta ligar a outros OTTs
@@ -55,16 +55,16 @@ public class OTT {
 			try {
 				Socket socket = new Socket(vizinho, 8080);
 
+				DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+				BufferedReader dis   = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
 				ThreadOTTReceiver receiver = new ThreadOTTReceiver(dis, socket);
 				ThreadOTTSender sender = new ThreadOTTSender(socket, dos);
 				receiver.start();
 				sender.start();
 			}
-			catch (UnknownHostException u) {
+			catch (UnknownHostException | ConnectException u) {
 				System.out.println(u);
-			}
-			catch (IOException i) {
-				System.out.println(i);
 			}
 		}
 
@@ -72,6 +72,9 @@ public class OTT {
 		while (true) {
 			ServerSocket ss = new ServerSocket(8080);
 			Socket socket   = ss.accept();
+
+			DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+			BufferedReader dis   = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
 			ThreadOTTReceiver receiver = new ThreadOTTReceiver(dis, socket);
 			ThreadOTTSender sender     = new ThreadOTTSender(socket, dos);

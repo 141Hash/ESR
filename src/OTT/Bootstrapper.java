@@ -91,7 +91,7 @@ public class Bootstrapper {
 
             if (topologia.getTopologia().containsKey(line)) {
                 for (String vizinho : topologia.getVizinhos(line)) {
-                    byte[] data = vizinho.getBytes();
+                    byte[] data = (vizinho + "\n").getBytes();
                     dos.write(data);
                     dos.flush();
                 }
