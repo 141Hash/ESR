@@ -13,7 +13,7 @@ public class Bootstrapper {
     public static HashMap <String, Set<String>> readJSonFile () throws Exception {
         /*
         HashMap <String, Set<String>> topologiaRede = new HashMap<>();
-        JSONArray jo = (JSONArray) new JSONParser().parse(new FileReader("NetworkFiles/rede1.json"));
+        JSONArray jo = (JSONArray) new JSONParser().parse(new FileReader("../NetworkFiles/rede1.json"));
 
         for (Object nodo : jo) {
             JSONObject nodoAtual = (JSONObject) nodo;
@@ -43,7 +43,7 @@ public class Bootstrapper {
 
         HashMap <String, Set<String>> topologiaRede = new HashMap<>();
 
-        File ficheiro          = new File("NetworkFiles/rede1.txt");
+        File ficheiro          = new File("../NetworkFiles/rede1.txt");
 
         if (ficheiro.exists()) {
             BufferedReader reaader = new BufferedReader(new FileReader(ficheiro));
@@ -87,12 +87,19 @@ public class Bootstrapper {
             BufferedReader dis   = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             String line = dis.readLine();
-            //line = line.replaceAll("[\\n\\t ]", "");
             System.out.println(line);
 
-            byte[] data = topologia.getVizinhos(line).toString().getBytes();
-            dos.write(data);
-            dos.flush();
+            if (topologia.getTopologia().containsKey(line)) {
+                for (String vizinho : topologia.getVizinhos(line)) {
+                    byte[] data = vizinho.getBytes();
+                    dos.write(data);
+                    dos.flush();
+                }
+            } else {
+                byte[] data = "Nodo não registado na Topologia\n".getBytes();
+                dos.write(data);
+                dos.flush();
+            }
 
             dos.close();
             dis.close();

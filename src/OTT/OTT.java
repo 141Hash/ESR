@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class OTT {
     private String nome;
@@ -20,15 +22,18 @@ public class OTT {
         return nome;
     }
 
-    public static void main(String[] args) throws IOException{
-        
-		ServerSocket ss = new ServerSocket(Integer.parseInt("8080"));
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
 
-		Socket socket   = new Socket(args[0], 8080);
+	public static void main(String[] args) throws IOException{
 
-		DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-		BufferedReader dis   = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+    	Set<String> vizinhos = new TreeSet<>();
 
+		Socket socketServidorInicial   = new Socket(args[0], 8080);
+
+		DataOutputStream dos = new DataOutputStream(socketServidorInicial.getOutputStream());
+		BufferedReader dis   = new BufferedReader(new InputStreamReader(socketServidorInicial.getInputStream()));
 
 		String ipAdress = InetAddress.getLocalHost().getHostAddress() + "\n";
 		byte[] data = ipAdress.getBytes();
@@ -37,22 +42,22 @@ public class OTT {
 
 		String line;
 		while ((line = dis.readLine()) != null) {
-			System.out.println(line);
+			System.out.println("Adicionado vizinho: " + line);
+			vizinhos.add(line);
 		}
 
 		dos.close();
 		dis.close();
-		socket.close();
+		socketServidorInicial.close();
 
-		/*
-		ThreadOTTReceiver receiver = new ThreadOTTReceiver(dis, socket);
-		ThreadOTTSender sender     = new ThreadOTTSender(socket, dos);
-		receiver.start();
-		sender.start();
-		 */
 
-		while(true) {
-			//Socket newSocket = ss.accept();
+		for (String vizinho : vizinhos) {
+			Socket socket = new Socket(vizinho, 8080);
+
+			ThreadOTTReceiver receiver = new ThreadOTTReceiver(dis, socket);
+			ThreadOTTSender sender     = new ThreadOTTSender(socket, dos);
+			receiver.start();
+			sender.start();
 		}
 
     }
