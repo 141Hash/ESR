@@ -43,9 +43,7 @@ public class OTT {
 		String line;
 		while ((line = disServidorInicial.readLine()) != null) {
 			System.out.println("Adicionado vizinho: " + line);
-			if (!line.equals("10.0.0.10")) {
-				vizinhos.add(line);
-			}
+			vizinhos.add(line);
 		}
 
 		dosServidorInicial.close();
@@ -60,14 +58,16 @@ public class OTT {
 				DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 				BufferedReader dis   = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+				byte[] mensagemConnectionVizinho = ("VIZINHO$" + ipAdress).getBytes();
+				dos.write(data);
+				dos.flush();
+
 				ThreadOTTReceiver receiver = new ThreadOTTReceiver(dis, socket);
 				ThreadOTTSender sender = new ThreadOTTSender(socket, dos);
 				receiver.start();
 				sender.start();
 			}
-			catch (UnknownHostException | ConnectException u) {
-				System.out.println(u);
-			}
+			catch (UnknownHostException | ConnectException ignored) { }
 		}
 
 		// Se outros OTTs não estiverem ligados, ele fica à espera que se liguem a si

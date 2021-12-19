@@ -86,31 +86,35 @@ public class Bootstrapper {
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
             BufferedReader dis   = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            /*
-            todo: Nest readLine podemos tentar fazer com que o Servidor receba uma mensagm de tipos:
-                    "10.0.0.1"         - interperta como uma ligação inicial que pretende receber informações sobre os vizinhos (fica como está agora)
-                    "VIZINHO$10.0.0.1" - interperta como se fosse uma ligação de um vizinho e criar threads para o mesmo e prosegguir com os passos
-
-                    Noutra maneira d epensar pode deixar-se a conexão ativada em vez de a desligar sempre, mas penso ser mais complicado
-             */
             String line = dis.readLine();
             System.out.println(line);
 
-            if (topologia.getTopologia().containsKey(line)) {
-                for (String vizinho : topologia.getVizinhos(line)) {
-                    byte[] data = (vizinho + "\n").getBytes();
+            String[] dadosConnection = line.split("-");
+            if (dadosConnection.length > 1 && dadosConnection[0].equals("VIZINHO")) {
+
+                ThreadOTTReceiver receiver = new ThreadOTTReceiver(dis, socket);
+                ThreadOTTSender sender = new ThreadOTTSender(socket, dos);
+                receiver.start();
+                sender.start();
+            }
+            else {
+                if (topologia.getTopologia().containsKey(line)) {
+                    for (String vizinho : topologia.getVizinhos(line)) {
+                        byte[] data = (vizinho + "\n").getBytes();
+                        dos.write(data);
+                        dos.flush();
+                    }
+                } else {
+                    byte[] data = "Nodo não registado na Topologia\n".getBytes();
                     dos.write(data);
                     dos.flush();
                 }
-            } else {
-                byte[] data = "Nodo não registado na Topologia\n".getBytes();
-                dos.write(data);
-                dos.flush();
+
+                dos.close();
+                dis.close();
+                socket.close();
             }
 
-            dos.close();
-            dis.close();
-            socket.close();
         }
 
         /*
