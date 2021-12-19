@@ -60,16 +60,18 @@ public class OTT {
 				DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 				BufferedReader dis   = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-				vizinhos.put(vizinho, new DadosVizinho(vizinho, dos, dis, socket));
+				if (socket.getInetAddress().isReachable(1000)) {
+					vizinhos.put(vizinho, new DadosVizinho(vizinho, dos, dis, socket));
 
-				byte[] mensagemConnectionVizinho = ("VIZINHO-" + ipAdress + "\n").getBytes();
-				dos.write(mensagemConnectionVizinho);
-				dos.flush();
+					byte[] mensagemConnectionVizinho = ("VIZINHO-" + ipAdress + "\n").getBytes();
+					dos.write(mensagemConnectionVizinho);
+					dos.flush();
 
-				ThreadOTTReceiver receiver = new ThreadOTTReceiver(ipAdress, dis, socket, vizinhos);
-				ThreadOTTSender sender = new ThreadOTTSender(socket, dos, vizinhos.get(vizinho).getMessagesToSend());
-				receiver.start();
-				sender.start();
+					ThreadOTTReceiver receiver = new ThreadOTTReceiver(ipAdress, dis, socket, vizinhos);
+					ThreadOTTSender sender = new ThreadOTTSender(socket, dos, vizinhos.get(vizinho).getMessagesToSend());
+					receiver.start();
+					sender.start();
+				}
 			}
 			catch (UnknownHostException | ConnectException ignored) { }
 		}
