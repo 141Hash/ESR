@@ -71,10 +71,22 @@ public class Bootstrapper {
         return topologiaRede;
     }
 
+    /*
+        Lista dos vizinhos
+            - Ip Vzinho
+            - Dos vizinhos
+            - Dis vizinho
+            - Socket
+            - Queue de cenas para mandar
+        Lista de fowards
+     */
+
     public static void main(String[] args) throws Exception {
 
+        Map<String, DadosVizinho> vizinhos = new HashMap<String, DadosVizinho>();
+
         HashMap <String, Set<String>> topologiaRede = readTxtFile();
-        Topologia topologia = new Topologia(topologiaRede);;
+        Topologia topologia = new Topologia(topologiaRede);
 
         System.out.println(topologia.getTopologia().toString());
 
@@ -91,8 +103,8 @@ public class Bootstrapper {
 
             String[] dadosConnection = line.split("-");
             if (dadosConnection.length > 1 && dadosConnection[0].equals("VIZINHO")) {
-
-                ThreadOTTReceiver receiver = new ThreadOTTReceiver(dis, socket);
+                vizinhos.put(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
+                ThreadOTTReceiver receiver = new ThreadOTTReceiver(dis, socket, vizinhos);
                 ThreadOTTSender sender = new ThreadOTTSender(socket, dos);
                 receiver.start();
                 sender.start();

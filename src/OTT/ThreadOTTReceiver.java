@@ -5,16 +5,19 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Map;
 
 public class ThreadOTTReceiver extends Thread{
     private String ipOTT;
     private int portaOTT;
     private BufferedReader dis;
     private Socket s;
+    private Map<String, DadosVizinho> vizinhos;
 
-    public ThreadOTTReceiver(BufferedReader dis, Socket s) throws IOException{
+    public ThreadOTTReceiver(BufferedReader dis, Socket s, Map<String, DadosVizinho> vizinhos) throws IOException{
         this.dis = dis;
         this.s = s;
+        this.vizinhos = vizinhos;
     }
 
     public void run(){

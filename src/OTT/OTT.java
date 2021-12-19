@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -28,7 +30,7 @@ public class OTT {
 
 	public static void main(String[] args) throws IOException{
 
-    	Set<String> vizinhos = new TreeSet<>();
+		Map<String, DadosVizinho> vizinhos = new HashMap<String, DadosVizinho>();
 
 		Socket socketServidorInicial   = new Socket(args[0], 8080);
 
@@ -43,7 +45,7 @@ public class OTT {
 		String line;
 		while ((line = disServidorInicial.readLine()) != null) {
 			System.out.println("Adicionado vizinho: " + line);
-			vizinhos.add(line);
+			vizinhos.put(line, null);
 		}
 
 		dosServidorInicial.close();
@@ -51,18 +53,20 @@ public class OTT {
 		socketServidorInicial.close();
 
 		// Tenta ligar a outros OTTs
-		for (String vizinho : vizinhos) {
+		for (String vizinho : vizinhos.keySet()) {
 			try {
 				Socket socket = new Socket(vizinho, 8080);
 
 				DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 				BufferedReader dis   = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-				byte[] mensagemConnectionVizinho = ("VIZINHO$" + ipAdress).getBytes();
-				dos.write(data);
+				vizinhos.put(vizinho, new DadosVizinho(vizinho, dos, dis, socket));
+
+				byte[] mensagemConnectionVizinho = ("VIZINHO-" + ipAdress).getBytes();
+				dos.write(mensagemConnectionVizinho);
 				dos.flush();
 
-				ThreadOTTReceiver receiver = new ThreadOTTReceiver(dis, socket);
+				ThreadOTTReceiver receiver = new ThreadOTTReceiver(dis, socket, vizinhos);
 				ThreadOTTSender sender = new ThreadOTTSender(socket, dos);
 				receiver.start();
 				sender.start();
@@ -79,10 +83,25 @@ public class OTT {
 			DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 			BufferedReader dis   = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-			ThreadOTTReceiver receiver = new ThreadOTTReceiver(dis, socket);
-			ThreadOTTSender sender     = new ThreadOTTSender(socket, dos);
-			receiver.start();
-			sender.start();
+			String linha = dis.readLine();
+			System.out.println(linha);
+			String[] dadosConnection = linha.split("-");
+
+
+			if (dadosConnection.length > 1 && dadosConnection[0].equals("VIZINHO")) {
+				vizinhos.put(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
+				ThreadOTTReceiver receiver = new ThreadOTTReceiver(dis, socket, vizinhos);
+				ThreadOTTSender sender = new ThreadOTTSender(socket, dos);
+				receiver.start();
+				sender.start();
+
+				System.out.println(vizinhos.toString());
+			}
+			else {
+				dos.close();
+				dis.close();
+				socket.close();
+			}
 		}
 
     }
