@@ -40,8 +40,6 @@ public class Bootstrapper {
         }
 
         return topologiaRede;
-
-        //return null;
     }
 
     public static HashMap <String, Set<String>> readTxtFile () throws Exception {
