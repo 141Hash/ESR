@@ -33,7 +33,7 @@ public class ThreadOTTReceiver extends Thread{
                     Set<String> historico = new HashSet<>(Arrays.asList(mensagemControlo[2].split("-")));
 
                     for (String vizinho : this.vizinhos.keySet()) {
-                        if (!historico.contains(vizinho)) {
+                        if (!historico.contains(vizinho) && this.vizinhos.get(vizinho) != null) {
                             String nextMessage = mensagemControlo[0] + "#" + nrSaltos + "#" + mensagemControlo[2] + "-" + ipOTT + "\n";
                             this.vizinhos.get(vizinho).getMessagesToSend().add(nextMessage);
                         }
