@@ -134,7 +134,7 @@ public class Teste {
         VideoFileName = argv[0];
         System.out.println("Teste: VideoFileName indicado como parametro: " + VideoFileName);
     } else  {
-        VideoFileName = "movie.Mjpeg";
+        VideoFileName = "../MovieFiles/movie.Mjpeg";
         System.out.println("Teste: parametro não foi indicado. VideoFileName = " + VideoFileName);
     }
 
