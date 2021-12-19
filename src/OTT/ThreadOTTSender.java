@@ -9,27 +9,26 @@ import java.net.Socket;
 public class ThreadOTTSender extends Thread{
     private final Socket socket;
     private final DataOutputStream dos;
+    private QueueMensagens messagesToSend;
 
-    public ThreadOTTSender(Socket socket, DataOutputStream dos){
+
+    public ThreadOTTSender(Socket socket, DataOutputStream dos, QueueMensagens messagesToSend){
         this.socket = socket;
         this.dos = dos;
+        this.messagesToSend = messagesToSend;
     }
 
     public void run(){
-	int number = 0;
         while (true) {
 			try {
-				byte[] data = "Hello\n".getBytes();
+				String message = messagesToSend.remove();
+
+				byte[] data = message.getBytes();
 				dos.write(data);
 				dos.flush();
-				System.out.println("Sended " + number + "messages\n");
-				number++;
-				Thread.sleep(1000);
-			} catch (IOException e){
-				System.out.println(e.getMessage());
-			} catch (InterruptedException e){
-				System.out.println(e.getMessage());
-			}
+
+			} catch (IOException | InterruptedException ignored){ }
 		}
     }
+
 }

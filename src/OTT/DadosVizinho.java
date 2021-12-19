@@ -1,7 +1,6 @@
 package OTT;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.LinkedList;
@@ -11,14 +10,14 @@ public class DadosVizinho {
     private DataOutputStream dos;
     private BufferedReader dis;
     private Socket socket;
-    private LinkedList<String> messagesToSend;
+    private QueueMensagens messagesToSend;
 
     public DadosVizinho (String ipVizinho, DataOutputStream dos, BufferedReader dis, Socket socket) {
         this.ipVizinho = ipVizinho;
         this.dos = dos;
         this.dis = dis;
         this.socket = socket;
-        this.messagesToSend = new LinkedList<>();
+        this.messagesToSend = new QueueMensagens();
     }
 
     public String getIpVizinho() {
@@ -37,11 +36,7 @@ public class DadosVizinho {
         return socket;
     }
 
-    public LinkedList<String> getMessagesToSend() {
+    public QueueMensagens getMessagesToSend() {
         return messagesToSend;
-    }
-
-    public void addMessageToQueue (String message) {
-        this.messagesToSend.add(message);
     }
 }

@@ -37,8 +37,8 @@ public class OTT {
 		DataOutputStream dosServidorInicial = new DataOutputStream(socketServidorInicial.getOutputStream());
 		BufferedReader disServidorInicial   = new BufferedReader(new InputStreamReader(socketServidorInicial.getInputStream()));
 
-		String ipAdress = InetAddress.getLocalHost().getHostAddress() + "\n";
-		byte[] data = ipAdress.getBytes();
+		String ipAdress = InetAddress.getLocalHost().getHostAddress();
+		byte[] data = (ipAdress + "\n").getBytes();
 		dosServidorInicial.write(data);
 		dosServidorInicial.flush();
 
@@ -62,12 +62,12 @@ public class OTT {
 
 				vizinhos.put(vizinho, new DadosVizinho(vizinho, dos, dis, socket));
 
-				byte[] mensagemConnectionVizinho = ("VIZINHO-" + ipAdress).getBytes();
+				byte[] mensagemConnectionVizinho = ("VIZINHO-" + ipAdress + "\n").getBytes();
 				dos.write(mensagemConnectionVizinho);
 				dos.flush();
 
-				ThreadOTTReceiver receiver = new ThreadOTTReceiver(dis, socket, vizinhos);
-				ThreadOTTSender sender = new ThreadOTTSender(socket, dos);
+				ThreadOTTReceiver receiver = new ThreadOTTReceiver(ipAdress, dis, socket, vizinhos);
+				ThreadOTTSender sender = new ThreadOTTSender(socket, dos, vizinhos.get(vizinho).getMessagesToSend());
 				receiver.start();
 				sender.start();
 			}
@@ -90,8 +90,8 @@ public class OTT {
 
 			if (dadosConnection.length > 1 && dadosConnection[0].equals("VIZINHO")) {
 				vizinhos.put(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
-				ThreadOTTReceiver receiver = new ThreadOTTReceiver(dis, socket, vizinhos);
-				ThreadOTTSender sender = new ThreadOTTSender(socket, dos);
+				ThreadOTTReceiver receiver = new ThreadOTTReceiver(ipAdress, dis, socket, vizinhos);
+				ThreadOTTSender sender = new ThreadOTTSender(socket, dos, vizinhos.get(dadosConnection[1]).getMessagesToSend());
 				receiver.start();
 				sender.start();
 

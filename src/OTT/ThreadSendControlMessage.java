@@ -4,7 +4,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 
-public class ThreadSendControlMessage {
+public class ThreadSendControlMessage extends Thread {
     private final DataOutputStream dos;
 
     public ThreadSendControlMessage(DataOutputStream dos) {

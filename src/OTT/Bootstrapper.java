@@ -4,6 +4,7 @@ package OTT;
 //import org.json.simple.parser.*;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
@@ -88,6 +89,8 @@ public class Bootstrapper {
         HashMap <String, Set<String>> topologiaRede = readTxtFile();
         Topologia topologia = new Topologia(topologiaRede);
 
+        String ipAdress = InetAddress.getLocalHost().getHostAddress();
+
         System.out.println(topologia.getTopologia().toString());
 
         ServerSocket ss = new ServerSocket(Integer.parseInt("8080"));
@@ -104,10 +107,14 @@ public class Bootstrapper {
             String[] dadosConnection = line.split("-");
             if (dadosConnection.length > 1 && dadosConnection[0].equals("VIZINHO")) {
                 vizinhos.put(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
-                ThreadOTTReceiver receiver = new ThreadOTTReceiver(dis, socket, vizinhos);
-                ThreadOTTSender sender = new ThreadOTTSender(socket, dos);
+
+                ThreadOTTReceiver receiver = new ThreadOTTReceiver(ipAdress, dis, socket, vizinhos);
+                ThreadOTTSender sender = new ThreadOTTSender(socket, dos, vizinhos.get(dadosConnection[1]).getMessagesToSend());
+                ThreadSendControlMessage controler = new ThreadSendControlMessage(dos);
+
                 receiver.start();
                 sender.start();
+                controler.start();
             }
             else {
                 if (topologia.getTopologia().containsKey(line)) {
