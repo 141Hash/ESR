@@ -14,23 +14,11 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class OTT {
-    private String nome;
-    
-    public OTT(String nome){
-        this.nome = nome;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-	public void setNome(String nome) {
-		this.nome = nome;
-	}
 
 	public static void main(String[] args) throws IOException{
 
 		Map<String, DadosVizinho> vizinhos = new HashMap<String, DadosVizinho>();
+		Rota rotaFluxo = new Rota();
 
 		Socket socketServidorInicial   = new Socket(args[0], 8080);
 
@@ -67,7 +55,7 @@ public class OTT {
 					dos.write(mensagemConnectionVizinho);
 					dos.flush();
 
-					ThreadOTTReceiver receiver = new ThreadOTTReceiver(ipAdress, dis, socket, vizinhos);
+					ThreadOTTReceiver receiver = new ThreadOTTReceiver(ipAdress, dis, socket, vizinhos, rotaFluxo);
 					ThreadOTTSender sender = new ThreadOTTSender(socket, dos, vizinhos.get(vizinho).getMessagesToSend());
 					receiver.start();
 					sender.start();
@@ -92,7 +80,7 @@ public class OTT {
 
 			if (dadosConnection.length > 1 && dadosConnection[0].equals("VIZINHO")) {
 				vizinhos.put(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
-				ThreadOTTReceiver receiver = new ThreadOTTReceiver(ipAdress, dis, socket, vizinhos);
+				ThreadOTTReceiver receiver = new ThreadOTTReceiver(ipAdress, dis, socket, vizinhos, rotaFluxo);
 				ThreadOTTSender sender = new ThreadOTTSender(socket, dos, vizinhos.get(dadosConnection[1]).getMessagesToSend());
 				receiver.start();
 				sender.start();

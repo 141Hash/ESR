@@ -85,6 +85,7 @@ public class Bootstrapper {
     public static void main(String[] args) throws Exception {
 
         Map<String, DadosVizinho> vizinhos = new HashMap<String, DadosVizinho>();
+        Rota rotaFluxo = new Rota();
 
         HashMap <String, Set<String>> topologiaRede = readTxtFile();
         Topologia topologia = new Topologia(topologiaRede);
@@ -108,7 +109,7 @@ public class Bootstrapper {
             if (dadosConnection.length > 1 && dadosConnection[0].equals("VIZINHO")) {
                 vizinhos.put(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
 
-                ThreadOTTReceiver receiver = new ThreadOTTReceiver(ipAdress, dis, socket, vizinhos);
+                ThreadOTTReceiver receiver = new ThreadOTTReceiver(ipAdress, dis, socket, vizinhos, rotaFluxo);
                 ThreadOTTSender sender = new ThreadOTTSender(socket, dos, vizinhos.get(dadosConnection[1]).getMessagesToSend());
                 ThreadSendControlMessage controler = new ThreadSendControlMessage(dos);
 
