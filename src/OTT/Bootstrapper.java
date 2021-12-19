@@ -3,6 +3,10 @@ package OTT;
 //import org.json.simple.*;
 //import org.json.simple.parser.*;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -12,7 +16,7 @@ import java.util.*;
 public class Bootstrapper {
 
     public static HashMap <String, Set<String>> readJSonFile () throws Exception {
-        /*
+
         HashMap <String, Set<String>> topologiaRede = new HashMap<>();
         JSONArray jo = (JSONArray) new JSONParser().parse(new FileReader("../NetworkFiles/rede1.json"));
 
@@ -36,8 +40,8 @@ public class Bootstrapper {
         }
 
         return topologiaRede;
-         */
-        return null;
+
+        //return null;
     }
 
     public static HashMap <String, Set<String>> readTxtFile () throws Exception {
@@ -87,7 +91,7 @@ public class Bootstrapper {
         Map<String, DadosVizinho> vizinhos = new HashMap<String, DadosVizinho>();
         Rota rotaFluxo = new Rota();
 
-        HashMap <String, Set<String>> topologiaRede = readTxtFile();
+        HashMap <String, Set<String>> topologiaRede = readJSonFile();
         Topologia topologia = new Topologia(topologiaRede);
 
         String ipAdress = InetAddress.getLocalHost().getHostAddress();
