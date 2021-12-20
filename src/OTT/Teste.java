@@ -39,7 +39,7 @@ public class Teste {
   static int RTP_RCV_PORT = 25000; //port where the client will receive the RTP packets
   int RTP_dest_port = 25000; //destination port for RTP packets 
   InetAddress ClientIPAddr; //Client IP address
-  
+
   Timer cTimer; //timer used to receive data from the UDP socket
   byte[] cBuf; //buffer used to store data received from the server 
  
@@ -66,10 +66,10 @@ public class Teste {
  
     //Frame
     f.addWindowListener(new WindowAdapter() {
-       public void windowClosing(WindowEvent e) {
-	 System.exit(0);
-       }
-    });
+          public void windowClosing(WindowEvent e) {
+              System.exit(0);
+          }
+      });
 
     //Buttons
     buttonPanel.setLayout(new GridLayout(1,0));
