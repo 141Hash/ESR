@@ -34,7 +34,7 @@ public class ThreadOTTReceiver extends Thread{
             rotaFluxo.setOrigem(ipOrigem);
             for (String vizinho : this.vizinhos.keySet()) {
                 if (!vizinho.equals(ipOrigem)) {
-                    rotaFluxo.addDestino(vizinho);
+                    rotaFluxo.addDestinoVizinho(vizinho);
                 }
             }
         }
@@ -42,25 +42,51 @@ public class ThreadOTTReceiver extends Thread{
             String ipAdress = InetAddress.getLocalHost().getHostAddress();
 
             String dontUseMeAsDestiny = "DontUseMeAsDestiny#" + ipAdress + "\n";
-            this.vizinhos.get(ipOrigem).getMessagesToSend().add(dontUseMeAsDestiny);
+            this.vizinhos.get(ipOrigem).addMessagesToSend(dontUseMeAsDestiny);
         }
 
         System.out.println(rotaFluxo.toString());
         nrSaltos++;
 
+        int counterFowards = 0;
         for (String vizinho : this.vizinhos.keySet()) {
             if (!historico.contains(vizinho) && this.vizinhos.get(vizinho) != null) {
                 String nextMessage = mensagemControlo[0] + "#" + nrSaltos + "#" + mensagemControlo[2] + "-" + ipOTT + "\n";
-                this.vizinhos.get(vizinho).getMessagesToSend().add(nextMessage);
+                this.vizinhos.get(vizinho).addMessagesToSend(nextMessage);
+                counterFowards++;
             }
         }
+
+        if (counterFowards == 0) {
+            String ipAdress = InetAddress.getLocalHost().getHostAddress();
+
+            String totalDestinies = "TotalDestinies#" + ipAdress + "\n";
+            this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend(totalDestinies);
+        }
+
+    }
+
+    private void adicionaDestinosTotais(String[] mensagemControlo) throws UnknownHostException {
+        ArrayList<String> destinos = new ArrayList<>(Arrays.asList(mensagemControlo[1].split("-")));
+
+        int nrDestinos = destinos.size();
+        if (nrDestinos > 1) {
+            String destino = destinos.get(nrDestinos - 1);
+            for (int i = 0; i < nrDestinos - 1; i++) {
+                this.rotaFluxo.addDestinoVizinhoToTotalDestinies(destino, destinos.get(i));
+            }
+        }
+
+        String ipAdress = InetAddress.getLocalHost().getHostAddress();
+        String messageToOrigem = mensagemControlo[1] + "-" + ipAdress + "\n";
+        this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend(messageToOrigem);
 
     }
 
     private void removeMeFromDestiny(String[] mensagemControlo) {
 
         String ipDestino = mensagemControlo[1];
-        if (rotaFluxo.getDestinos().contains(ipDestino))
+        if (rotaFluxo.getDestinosVizinhos().containsKey(ipDestino))
             rotaFluxo.removeDestino(ipDestino);
 
     }
@@ -74,6 +100,9 @@ public class ThreadOTTReceiver extends Thread{
                 String[] mensagemControlo = line.split("#");
    		        if (mensagemControlo.length > 2 && mensagemControlo[0].equals("RouteControl")) {
    		            adicionaMensagemControloVizinhos(mensagemControlo);
+                }
+   		        else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("TotalDestinies")) {
+                    adicionaDestinosTotais(mensagemControlo);
                 }
    		        else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("DontUseMeAsDestiny")) {
    		            removeMeFromDestiny(mensagemControlo);

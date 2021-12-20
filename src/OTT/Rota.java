@@ -1,5 +1,6 @@
 package OTT;
 
+import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.locks.ReentrantLock;
@@ -7,14 +8,14 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Rota {
     private int custo;
     private String origem;
-    private Set<String> destinos;
+    private HashMap<String, Set<String>> destinosVizinhos;
     private boolean estado;
     private ReentrantLock lock;
 
     public Rota() {
         this.custo = -1;
         this.origem = null;
-        this.destinos = new TreeSet<>();
+        this.destinosVizinhos = new HashMap<>();
         this.estado = false;
         this.lock = new ReentrantLock();
     }
@@ -37,10 +38,10 @@ public class Rota {
         }
     }
 
-    public Set<String> getDestinos() {
+    public HashMap<String, Set<String>> getDestinosVizinhos() {
         lock.lock();
         try {
-            return destinos;
+            return destinosVizinhos;
         } finally {
             lock.unlock();
         }
@@ -73,10 +74,10 @@ public class Rota {
         }
     }
 
-    public void setDestinos(Set<String> destinos) {
+    public void setDestinos(HashMap<String, Set<String>> destinosVizinhos) {
         lock.lock();
         try {
-            this.destinos = destinos;
+            this.destinosVizinhos = destinosVizinhos;
         } finally {
             lock.unlock();
         }
@@ -91,10 +92,10 @@ public class Rota {
         }
     }
 
-    public void addDestino (String destino) {
+    public void addDestinoVizinho (String destino) {
         lock.lock();
         try {
-            this.destinos.add(destino);
+            this.destinosVizinhos.put(destino, null);
         } finally {
             lock.unlock();
         }
@@ -103,7 +104,16 @@ public class Rota {
     public void removeDestino (String destino) {
         lock.lock();
         try {
-            this.destinos.remove(destino);
+            this.destinosVizinhos.remove(destino);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void addDestinoVizinhoToTotalDestinies (String destino, String proximoVizinho) {
+        lock.lock();
+        try {
+            this.destinosVizinhos.get(destino).add(proximoVizinho);
         } finally {
             lock.unlock();
         }
@@ -114,7 +124,7 @@ public class Rota {
         return "Rota{" +
                 "custo=" + custo +
                 ", origem='" + origem + '\'' +
-                ", destinos=" + destinos +
+                ", destinos=" + destinosVizinhos.toString() +
                 ", estado='" + estado + '\'' +
                 '}';
     }
