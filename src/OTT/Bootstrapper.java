@@ -73,6 +73,7 @@ public class Bootstrapper {
 
     public static void estabeleConnectioVizinho(Map<String, DadosVizinho> vizinhos, DataOutputStream dos, BufferedReader dis, Socket socket, Rota rotaFluxo, String[] dadosConnection, String ipAdress) {
 
+        rotaFluxo.addDestinoVizinho(dadosConnection[1]);
         vizinhos.put(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
 
         ThreadOTTReceiver receiver         = new ThreadOTTReceiver(ipAdress, dis, socket, vizinhos, rotaFluxo);
