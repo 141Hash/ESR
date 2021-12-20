@@ -35,6 +35,9 @@ public class ThreadOTTReceiver extends Thread{
                     rotaFluxo.addDestino(vizinho);
                 }
             }
+        } else {
+            String dontUseMeAsDestiny = "DontUseMeAsDestiny#" + ipOrigem + "\n";
+            this.vizinhos.get(ipOrigem).getMessagesToSend().add(dontUseMeAsDestiny);
         }
 
         System.out.println(rotaFluxo.toString());
@@ -49,6 +52,15 @@ public class ThreadOTTReceiver extends Thread{
 
     }
 
+    private void removeMeFromDestiny(String[] mensagemControlo) {
+
+        String ipDestino = mensagemControlo[1];
+        if (rotaFluxo.getDestinos().contains(ipDestino))
+            rotaFluxo.removeDestino(ipDestino);
+
+    }
+
+
     public void run () {
 	    String line;
     	try {       
@@ -57,6 +69,9 @@ public class ThreadOTTReceiver extends Thread{
                 String[] mensagemControlo = line.split("#");
    		        if (mensagemControlo.length > 2 && mensagemControlo[0].equals("RouteControl")) {
    		            adicionaMensagemControloVizinhos(mensagemControlo);
+                }
+   		        else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("DontUseMeAsDestiny")) {
+   		            removeMeFromDestiny(mensagemControlo);
                 }
    		        System.out.println(line);
 

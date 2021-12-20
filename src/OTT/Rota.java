@@ -100,6 +100,15 @@ public class Rota {
         }
     }
 
+    public void removeDestino (String destino) {
+        lock.lock();
+        try {
+            this.destinos.remove(destino);
+        } finally {
+            lock.unlock();
+        }
+    }
+
     @Override
     public String toString() {
         return "Rota{" +

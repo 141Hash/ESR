@@ -12,7 +12,7 @@
 ❌ Enviar mensagem para trás caso rota não seja a certa e então o nodo anterior deve retirar o atual do destino
 
 ❌ Cada nodo deve ter para que nodo ir, mesmo não sendo o próximo?
-    - Por exxemplo: O7->O3->O2->O1 (O7 tem de saber que para ir para O2 tem de ir para O3)?
+    - Por exemplo: O7->O3->O2->O1 (O7 tem de saber que para ir para O2 tem de ir para O3)?
 
 
 ❌ Começar a completar e a utilizar código dado pelo Stor que possui implementação UDP com Packets para streaming.
