@@ -1,8 +1,5 @@
 package OTT;
 
-//import org.json.simple.*;
-//import org.json.simple.parser.*;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -46,7 +43,7 @@ public class Bootstrapper {
 
         HashMap <String, Set<String>> topologiaRede = new HashMap<>();
 
-        File ficheiro          = new File("../NetworkFiles/rede1.txt");
+        File ficheiro = new File("../NetworkFiles/rede1.txt");
 
         if (ficheiro.exists()) {
             BufferedReader reaader = new BufferedReader(new FileReader(ficheiro));
@@ -74,75 +71,66 @@ public class Bootstrapper {
         return topologiaRede;
     }
 
-    /*
-        Lista dos vizinhos
-            - Ip Vzinho
-            - Dos vizinhos
-            - Dis vizinho
-            - Socket
-            - Queue de cenas para mandar
-        Lista de fowards
-     */
+    public static void estabeleConnectioVizinho(Map<String, DadosVizinho> vizinhos, DataOutputStream dos, BufferedReader dis, Socket socket, Rota rotaFluxo, String[] dadosConnection, String ipAdress) {
+
+        vizinhos.put(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
+
+        ThreadOTTReceiver receiver         = new ThreadOTTReceiver(ipAdress, dis, socket, vizinhos, rotaFluxo);
+        ThreadOTTSender sender             = new ThreadOTTSender(socket, dos, vizinhos.get(dadosConnection[1]).getMessagesToSend());
+        ThreadSendControlMessage controler = new ThreadSendControlMessage(dos);
+
+        receiver.start();
+        sender.start();
+        controler.start();
+
+    }
+
+    public static void estabeleConnectioInicial(Topologia topologia, DataOutputStream dos, BufferedReader dis, Socket socket, String linha) throws IOException {
+
+        if (topologia.getTopologia().containsKey(linha)) {
+            for (String vizinho : topologia.getVizinhos(linha)) {
+                byte[] data = (vizinho + "\n").getBytes();
+                dos.write(data);
+                dos.flush();
+            }
+        } else {
+            byte[] data = "Nodo não registado na Topologia\n".getBytes();
+            dos.write(data);
+            dos.flush();
+        }
+
+        dos.close();
+        dis.close();
+        socket.close();
+
+    }
 
     public static void main(String[] args) throws Exception {
 
-        Map<String, DadosVizinho> vizinhos = new HashMap<String, DadosVizinho>();
+        Map<String, DadosVizinho> vizinhos = new HashMap<>();
         Rota rotaFluxo = new Rota();
 
         HashMap <String, Set<String>> topologiaRede = readJSonFile();
-        Topologia topologia = new Topologia(topologiaRede);
+        Topologia topologia  = new Topologia(topologiaRede);
 
         String ipAdress = InetAddress.getLocalHost().getHostAddress();
-
-        System.out.println(topologia.getTopologia().toString());
-
         ServerSocket ss = new ServerSocket(Integer.parseInt("8080"));
 
         while(true) {
-            Socket socket = ss.accept();
-
+            Socket socket        = ss.accept();
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
             BufferedReader dis   = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            String line = dis.readLine();
-            System.out.println(line);
-
+            String line              = dis.readLine();
             String[] dadosConnection = line.split("-");
+
             if (dadosConnection.length > 1 && dadosConnection[0].equals("VIZINHO")) {
-                vizinhos.put(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
-
-                ThreadOTTReceiver receiver = new ThreadOTTReceiver(ipAdress, dis, socket, vizinhos, rotaFluxo);
-                ThreadOTTSender sender = new ThreadOTTSender(socket, dos, vizinhos.get(dadosConnection[1]).getMessagesToSend());
-                ThreadSendControlMessage controler = new ThreadSendControlMessage(dos);
-
-                receiver.start();
-                sender.start();
-                controler.start();
+                estabeleConnectioVizinho(vizinhos, dos, dis, socket, rotaFluxo, dadosConnection, ipAdress);
+            } else {
+                estabeleConnectioInicial(topologia, dos, dis, socket, line);
             }
-            else {
-                if (topologia.getTopologia().containsKey(line)) {
-                    for (String vizinho : topologia.getVizinhos(line)) {
-                        byte[] data = (vizinho + "\n").getBytes();
-                        dos.write(data);
-                        dos.flush();
-                    }
-                } else {
-                    byte[] data = "Nodo não registado na Topologia\n".getBytes();
-                    dos.write(data);
-                    dos.flush();
-                }
-
-                dos.close();
-                dis.close();
-                socket.close();
-            }
-
         }
 
-        /*
-        Minha ideia para verificar a rota é servidor ir enviando pings/floods que vão crescendo e incrementando em cada nodo.
-        Deixar também informação sobre os nodos em que já passou para só fazer fowards e nunca enviar para trás uma mensagem!
-        Difícil de perceber, mas raciocínio terá de ser mais ao menos esse
-         */
     }
+
 }

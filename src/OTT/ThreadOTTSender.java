@@ -18,7 +18,7 @@ public class ThreadOTTSender extends Thread{
         this.messagesToSend = messagesToSend;
     }
 
-    public void run(){
+    public void run () {
         while (true) {
 			try {
 				String message = messagesToSend.remove();

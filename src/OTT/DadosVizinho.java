@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.LinkedList;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class DadosVizinho {
     private String ipVizinho;
@@ -11,6 +12,7 @@ public class DadosVizinho {
     private BufferedReader dis;
     private Socket socket;
     private QueueMensagens messagesToSend;
+    private ReentrantLock lock;
 
     public DadosVizinho (String ipVizinho, DataOutputStream dos, BufferedReader dis, Socket socket) {
         this.ipVizinho = ipVizinho;
@@ -18,25 +20,60 @@ public class DadosVizinho {
         this.dis = dis;
         this.socket = socket;
         this.messagesToSend = new QueueMensagens();
+        this.lock = new ReentrantLock();
     }
 
     public String getIpVizinho() {
-        return ipVizinho;
+        lock.lock();
+        try {
+            return ipVizinho;
+        } finally {
+            lock.unlock();
+        }
     }
 
     public DataOutputStream getDos() {
-        return dos;
+        lock.lock();
+        try {
+            return dos;
+        } finally {
+            lock.unlock();
+        }
     }
 
     public BufferedReader getDis() {
-        return dis;
+        lock.lock();
+        try {
+            return dis;
+        } finally {
+            lock.unlock();
+        }
     }
 
     public Socket getSocket() {
-        return socket;
+        lock.lock();
+        try {
+            return socket;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void addMessagesToSend(String message) {
+        lock.lock();
+        try {
+            this.messagesToSend.add(message);
+        } finally {
+            lock.unlock();
+        }
     }
 
     public QueueMensagens getMessagesToSend() {
-        return messagesToSend;
+        lock.lock();
+        try {
+            return messagesToSend;
+        } finally {
+            lock.unlock();
+        }
     }
 }

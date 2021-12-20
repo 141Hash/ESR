@@ -11,10 +11,10 @@ public class ThreadSendControlMessage extends Thread {
         this.dos = dos;
     }
 
-    /*
-        RouteControl#1#10.0.0.10
-        RouteControl#2#10.0.0.10-10.0.0.1
-    */
+    /* Types of Route Control messages:
+        - RouteControl#1#10.0.0.10
+        - RouteControl#2#10.0.0.10-10.0.0.1
+        */
 
     public void run() {
         while (true) {

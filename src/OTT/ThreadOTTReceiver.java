@@ -20,38 +20,46 @@ public class ThreadOTTReceiver extends Thread{
         this.rotaFluxo = rotaFluxo;
     }
 
-    public void run(){
+    public void adicionaMensagemControloVizinhos (String[] mensagemControlo) {
+
+        ArrayList<String> historico = new ArrayList<>(Arrays.asList(mensagemControlo[2].split("-")));
+
+        String ipOrigem = historico.get(historico.size() - 1);
+        int nrSaltos    = Integer. parseInt(mensagemControlo[1]);
+
+        if (rotaFluxo.getCusto() == -1 || rotaFluxo.getCusto() > nrSaltos) {
+            rotaFluxo.setCusto(nrSaltos);
+            rotaFluxo.setOrigem(ipOrigem);
+            for (String vizinho : this.vizinhos.keySet()) {
+                if (!vizinho.equals(ipOrigem)) {
+                    rotaFluxo.addDestino(vizinho);
+                }
+            }
+        }
+
+        System.out.println(rotaFluxo.toString());
+        nrSaltos++;
+
+        for (String vizinho : this.vizinhos.keySet()) {
+            if (!historico.contains(vizinho) && this.vizinhos.get(vizinho) != null) {
+                String nextMessage = mensagemControlo[0] + "#" + nrSaltos + "#" + mensagemControlo[2] + "-" + ipOTT + "\n";
+                this.vizinhos.get(vizinho).getMessagesToSend().add(nextMessage);
+            }
+        }
+
+    }
+
+    public void run () {
 	    String line;
     	try {       
    		    while ((line = dis.readLine()) != null) {
 
                 String[] mensagemControlo = line.split("#");
    		        if (mensagemControlo.length > 2 && mensagemControlo[0].equals("RouteControl")) {
-   		            int nrSaltos =  Integer. parseInt(mensagemControlo[1]);
-                    ArrayList<String> historico = new ArrayList<>(Arrays.asList(mensagemControlo[2].split("-")));
-                    String ipOrigem = historico.get(historico.size()-1);
-
-                    if (rotaFluxo.getCusto() == -1 || rotaFluxo.getCusto() > nrSaltos) {
-                        rotaFluxo.setCusto(nrSaltos);
-                        rotaFluxo.setOrigem(ipOrigem);
-                        for (String vizinho : this.vizinhos.keySet()) {
-                            if (!vizinho.equals(ipOrigem)) {
-                                rotaFluxo.addDestino(vizinho);
-                            }
-                        }
-                    }
-                    System.out.println(rotaFluxo.toString());
-
-   		            nrSaltos++;
-
-                    for (String vizinho : this.vizinhos.keySet()) {
-                        if (!historico.contains(vizinho) && this.vizinhos.get(vizinho) != null) {
-                            String nextMessage = mensagemControlo[0] + "#" + nrSaltos + "#" + mensagemControlo[2] + "-" + ipOTT + "\n";
-                            this.vizinhos.get(vizinho).getMessagesToSend().add(nextMessage);
-                        }
-                    }
+   		            adicionaMensagemControloVizinhos(mensagemControlo);
                 }
    		        System.out.println(line);
+
 		    }
 	    } catch(IOException e){
         	System.out.println(e.getMessage());
