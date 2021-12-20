@@ -1,18 +1,20 @@
 ############################## DONE ##############################
 
-Bootstrapper vai ter de possuir uma thread que envia periodicamente mensagem para calcular métricas
+✔ Bootstrapper vai ter de possuir uma thread que envia periodicamente mensagem para calcular métricas
 
-OTT vai ter de possuir:
-    - Lista de fowards;
-    - Lista de vizinhos;
-    - Tabela de Rotas (Servidor, Origem, Métrica (nr de saltos), Destinos, Estado da Rota)
+✔ OTT vai ter de possuir:
+    ✔ Lista de fowards;
+    ✔ Lista de vizinhos;
+    ✔ Tabela de Rotas (Servidor, Origem, Métrica (nr de saltos), Destinos, Estado da Rota)
 
 ############################## TO DO ##############################
 
-Começar a completar e a utilizar código dado pelo Stor
+❌ Enviar mensagem para trás caso rota não seja a certa e então o nodo anterior deve retirar o atual do destino
 
-Ligação UDP
+❌ Cada nodo deve ter para que nodo ir, mesmo não sendo o próximo?
+    - Por exxemplo: O7->O3->O2->O1 (O7 tem de saber que para ir para O2 tem de ir para O3)?
 
-Tentar implementar um Keep Alive
 
-Implementar um Safe Exit
+❌ Começar a completar e a utilizar código dado pelo Stor que possui implementação UDP com Packets para streaming.
+    . Ligação UDP:
+        - Tentar implementar um Keep Alive (para saídas bruscas e inesperadas) e um Safe Exit para saída segura de um dado Nodo
