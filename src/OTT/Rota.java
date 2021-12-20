@@ -95,7 +95,7 @@ public class Rota {
     public void addDestinoVizinho (String destino) {
         lock.lock();
         try {
-            this.destinosVizinhos.put(destino, null);
+            this.destinosVizinhos.put(destino, new TreeSet<String>());
         } finally {
             lock.unlock();
         }
