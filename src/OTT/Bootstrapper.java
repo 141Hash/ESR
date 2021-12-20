@@ -15,7 +15,7 @@ public class Bootstrapper {
     public static HashMap <String, Set<String>> readJSonFile () throws Exception {
 
         HashMap <String, Set<String>> topologiaRede = new HashMap<>();
-        JSONArray jo = (JSONArray) new JSONParser().parse(new FileReader("../NetworkFiles/rede1.json"));
+        JSONArray jo = (JSONArray) new JSONParser().parse(new FileReader("../NetworkFiles/rede2.json"));
 
         for (Object nodo : jo) {
             JSONObject nodoAtual = (JSONObject) nodo;
