@@ -7,9 +7,9 @@
     ✔ Lista de vizinhos;
     ✔ Tabela de Rotas (Servidor, Origem, Métrica (nr de saltos), Destinos, Estado da Rota)
 
-############################## TO DO ##############################
+✔ Enviar mensagem para trás caso rota não seja a certa e então o nodo anterior deve retirar o atual do destino
 
-❌ Enviar mensagem para trás caso rota não seja a certa e então o nodo anterior deve retirar o atual do destino
+############################## TO DO ##############################
 
 ❌ Cada nodo deve ter para que nodo ir, mesmo não sendo o próximo?
     - Por exemplo: O7->O3->O2->O1 (O7 tem de saber que para ir para O2 tem de ir para O3)?

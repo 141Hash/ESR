@@ -2,7 +2,9 @@ package OTT;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.*;
 
 public class ThreadOTTReceiver extends Thread{
@@ -20,7 +22,7 @@ public class ThreadOTTReceiver extends Thread{
         this.rotaFluxo = rotaFluxo;
     }
 
-    public void adicionaMensagemControloVizinhos (String[] mensagemControlo) {
+    public void adicionaMensagemControloVizinhos (String[] mensagemControlo) throws UnknownHostException {
 
         ArrayList<String> historico = new ArrayList<>(Arrays.asList(mensagemControlo[2].split("-")));
 
@@ -35,8 +37,11 @@ public class ThreadOTTReceiver extends Thread{
                     rotaFluxo.addDestino(vizinho);
                 }
             }
-        } else {
-            String dontUseMeAsDestiny = "DontUseMeAsDestiny#" + ipOrigem + "\n";
+        }
+        else if (!ipOrigem.equals(rotaFluxo.getOrigem())) {
+            String ipAdress = InetAddress.getLocalHost().getHostAddress();
+
+            String dontUseMeAsDestiny = "DontUseMeAsDestiny#" + ipAdress + "\n";
             this.vizinhos.get(ipOrigem).getMessagesToSend().add(dontUseMeAsDestiny);
         }
 
