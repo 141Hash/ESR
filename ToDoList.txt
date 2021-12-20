@@ -1,3 +1,5 @@
+############################## DONE ##############################
+
 Bootstrapper vai ter de possuir uma thread que envia periodicamente mensagem para calcular métricas
 
 OTT vai ter de possuir:
@@ -5,3 +7,12 @@ OTT vai ter de possuir:
     - Lista de vizinhos;
     - Tabela de Rotas (Servidor, Origem, Métrica (nr de saltos), Destinos, Estado da Rota)
 
+############################## TO DO ##############################
+
+Começar a completar e a utilizar código dado pelo Stor
+
+Ligação UDP
+
+Tentar implementar um Keep Alive
+
+Implementar um Safe Exit
