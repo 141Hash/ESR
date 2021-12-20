@@ -77,9 +77,11 @@ public class ThreadOTTReceiver extends Thread{
             }
         }
 
-        String ipAdress = InetAddress.getLocalHost().getHostAddress();
-        String messageToOrigem = mensagemControlo[0] + "#" + mensagemControlo[1] + "-" + ipAdress + "\n";
-        this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend(messageToOrigem);
+        if (this.rotaFluxo.getOrigem() != null) {
+            String ipAdress = InetAddress.getLocalHost().getHostAddress();
+            String messageToOrigem = mensagemControlo[0] + "#" + mensagemControlo[1] + "-" + ipAdress + "\n";
+            this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend(messageToOrigem);
+        }
 
     }
 
