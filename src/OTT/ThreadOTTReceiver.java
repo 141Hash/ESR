@@ -161,7 +161,7 @@ public class ThreadOTTReceiver extends Thread{
    		        else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("DontUseMeAsDestiny")) {
    		            removeMeFromDestiny(mensagemControlo);
                 }
-   		        else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("GetVideo")) {
+   		        else if (mensagemControlo.length == 3 && mensagemControlo[0].equals("GetVideo")) {
    		            if (this.isBootstrapper)
    		                envioVideoParaOTT(mensagemControlo);
    		            else
