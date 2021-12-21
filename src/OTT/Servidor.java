@@ -59,7 +59,8 @@ public class Servidor extends JFrame implements ActionListener {
         sBuf = new byte[MAX_SIZE_PACKET]; //allocate memory for the sending buffer
 
         try {
-        RTPsocket = new DatagramSocket(); //init RTP socket
+        RTPsocket = ds; //init RTP socket
+          queue = pq;
         ClientIPAddr = clientIPAddr;
         System.out.println("Servidor: socket " + ClientIPAddr);
         video = new VideoStream(VideoFileName); //init the VideoStream object:

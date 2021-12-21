@@ -23,13 +23,14 @@ public class ThreadOTTPedidos extends Thread {
             String pedido = reader.readLine();
 
             while (!pedido.equals("exit")) {
-                pedido = reader.readLine();
 
                 if (pedido.equals("get")) {
                     this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("GetVideo##"+ InetAddress.getLocalHost().getHostAddress() + "\n");
                 }
 
                 System.out.println(pedido);
+
+                pedido = reader.readLine();
             }
 
         }
