@@ -63,7 +63,7 @@ public class ThreadOTTReceiverUDP extends Thread {
 
                 RTPpacket rtp_packet = new RTPpacket(dp.getData(), dp.getLength());
 
-                if (rtp_packet.getpayloadtype() == 26) {
+                if (rtp_packet.getpayloadtype() == 26 || rtp_packet.getpayloadtype() == 27) {
                     recebePacketVideo(rtp_packet);
                 } else if (rtp_packet.getpayloadtype() == 1) {
                     // Podemos colocar aqui os KeepAlive por exemplo (Beacons)

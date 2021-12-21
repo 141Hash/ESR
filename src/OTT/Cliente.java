@@ -20,7 +20,6 @@ public class Cliente {
     //GUI
     //----
     JFrame f = new JFrame("Cliente de Testes");
-    JButton setupButton = new JButton("Setup");
     JButton playButton = new JButton("Play");
     JButton pauseButton = new JButton("Pause");
     JButton tearButton = new JButton("Teardown");
@@ -58,7 +57,6 @@ public class Cliente {
 
         //Buttons
         buttonPanel.setLayout(new GridLayout(1,0));
-        buttonPanel.add(setupButton);
         buttonPanel.add(playButton);
         buttonPanel.add(pauseButton);
         buttonPanel.add(tearButton);
@@ -154,24 +152,30 @@ public class Cliente {
                 //create an RTPpacket object from the DP
                 RTPpacket rtp_packet = rtPpacketQueue.remove();
 
-                //print important header fields of the RTP packet received:
-                System.out.println("Got RTP packet with SeqNum # "+rtp_packet.getsequencenumber()+" TimeStamp "+rtp_packet.gettimestamp()+" ms, of type "+rtp_packet.getpayloadtype());
+                if (rtp_packet.getpayloadtype() == 26) {
+                    //print important header fields of the RTP packet received:
+                    System.out.println("Got RTP packet with SeqNum # "+rtp_packet.getsequencenumber()+" TimeStamp "+rtp_packet.gettimestamp()+" ms, of type "+rtp_packet.getpayloadtype());
 
-                //print header bitstream:
-                rtp_packet.printheader();
+                    //print header bitstream:
+                    rtp_packet.printheader();
 
-                //get the payload bitstream from the RTPpacket object
-                int payload_length = rtp_packet.getpayload_length();
-                byte [] payload = new byte[payload_length];
-                rtp_packet.getpayload(payload);
+                    //get the payload bitstream from the RTPpacket object
+                    int payload_length = rtp_packet.getpayload_length();
+                    byte [] payload = new byte[payload_length];
+                    rtp_packet.getpayload(payload);
 
-                //get an Image object from the payload bitstream
-                Toolkit toolkit = Toolkit.getDefaultToolkit();
-                Image image = toolkit.createImage(payload, 0, payload_length);
+                    //get an Image object from the payload bitstream
+                    Toolkit toolkit = Toolkit.getDefaultToolkit();
+                    Image image = toolkit.createImage(payload, 0, payload_length);
 
-                //display the image as an ImageIcon object
-                icon = new ImageIcon(image);
-                iconLabel.setIcon(icon);
+                    //display the image as an ImageIcon object
+                    icon = new ImageIcon(image);
+                    iconLabel.setIcon(icon);
+                }
+                else if (rtp_packet.getpayloadtype() == 27) {
+                    cTimer.stop();
+                }
+
             }
             catch (InterruptedException ignored) { }
         }

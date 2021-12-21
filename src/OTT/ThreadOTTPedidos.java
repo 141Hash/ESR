@@ -31,7 +31,6 @@ public class ThreadOTTPedidos extends Thread {
 
                 if (pedido.equals("get")) {
                     Cliente cli = new Cliente(ds, rtpQueue, vizinhos, rotaFluxo);
-                    //this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("GetVideo##"+ InetAddress.getLocalHost().getHostAddress() + "\n");
                 }
 
                 System.out.println(pedido);

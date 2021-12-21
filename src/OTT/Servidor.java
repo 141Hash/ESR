@@ -135,6 +135,17 @@ public class Servidor extends JFrame implements ActionListener {
                 System.exit(0);
             }
         } else {
+            RTPpacket rtp_packet = new RTPpacket(27, imagenb, imagenb * FRAME_PERIOD, null, 0, DestinationIPAddr);
+
+            int packet_length = rtp_packet.getlength();
+
+            //retrieve the packet bitstream and store it in an array of bytes
+            byte[] packet_bits = new byte[packet_length];
+            rtp_packet.getpacket(packet_bits);
+
+            //send the packet as a DatagramPacket over the UDP socket
+            senddp = new DatagramPacket(packet_bits, packet_length, ClientIPAddr, RTP_dest_port);
+            queue.add(senddp);
             //if we have reached the end of the video file, stop the timer
             sTimer.stop();
         }

@@ -90,7 +90,6 @@ public class OTT {
 
 		String line;
 		while ((line = disServidorInicial.readLine()) != null) {
-			// System.out.println("Adicionado vizinho: " + line);
 			vizinhos.put(line, null);
 		}
 

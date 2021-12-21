@@ -49,9 +49,6 @@ public class RTPpacket {
         //--------------------------
         header = new byte[HEADER_SIZE];
 
-        //.............
-        //TO COMPLETE
-        //.............
         //fill the header array of byte with RTP header fields
         header[0] = (byte)(Version << 6 | Padding << 5 | Extension << 4 | CC);
         header[1] = (byte)(Marker << 7 | PayloadType & 0x000000FF);
@@ -150,12 +147,6 @@ public class RTPpacket {
         return DestinationIP;
     }
 
-    //--------------------------
-    //getPayloadType: return the payloadType
-    //--------------------------
-    public int getPayloadType() {
-        return PayloadType;
-    }
 
     //--------------------------
     //getpacket: returns the packet bitstream and its length
