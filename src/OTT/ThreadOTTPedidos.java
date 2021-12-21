@@ -29,8 +29,12 @@ public class ThreadOTTPedidos extends Thread {
 
             while (!pedido.equals("exit")) {
 
-                if (pedido.equals("get")) {
-                    Cliente cli = new Cliente(ds, rtpQueue, vizinhos, rotaFluxo);
+                if (pedido.startsWith("get")) {
+                    String videoFile = pedido.split(" ")[1];
+
+                    Thread threadCliente = new Thread(() -> { Cliente cli = new Cliente(ds, rtpQueue, vizinhos, rotaFluxo, videoFile); });
+                    threadCliente.start();
+
                 }
 
                 System.out.println(pedido);

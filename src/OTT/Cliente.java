@@ -39,12 +39,14 @@ public class Cliente {
 
     Timer cTimer; //timer used to receive data from the UDP socket
     byte[] cBuf; //buffer used to store data received from the server
+    boolean Playing = true;
+    String VideoFilneName;
  
     //--------------------------
     //Constructor
     //--------------------------
 
-    public Cliente(DatagramSocket ds, RTPpacketQueue rtpQueue, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo) {
+    public Cliente(DatagramSocket ds, RTPpacketQueue rtpQueue, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo, String videoFilneName) {
         //build GUI
         //--------------------------
 
@@ -62,7 +64,7 @@ public class Cliente {
         buttonPanel.add(tearButton);
 
         // handlers... (so dois)
-        playButton.addActionListener(new playButtonListener(rotaFluxo, vizinhos));
+        playButton.addActionListener(new playButtonListener(rotaFluxo, vizinhos, videoFilneName));
         tearButton.addActionListener(new tearButtonListener());
 
         //Image display label
@@ -90,6 +92,7 @@ public class Cliente {
             // socket e video
             this.vizinhos = vizinhos;
             this.rotaFluxo = rotaFluxo;
+            this.VideoFilneName = videoFilneName;
             rtPpacketQueue = rtpQueue;
             RTPsocket = ds; //init RTP socket (o mesmo para o cliente e servidor)
             RTPsocket.setSoTimeout(5000); // setimeout to 5s
@@ -108,15 +111,22 @@ public class Cliente {
 
         Rota rotaFluxo;
         Map<String, DadosVizinho> vizinhos;
+        String VideoFilneName;
 
-        public playButtonListener(Rota rotaFluxo, Map<String, DadosVizinho> vizinhos) {
+        public playButtonListener(Rota rotaFluxo, Map<String, DadosVizinho> vizinhos, String videoFilneName) {
             this.rotaFluxo = rotaFluxo;
             this.vizinhos = vizinhos;
+            this.VideoFilneName = videoFilneName;
         }
 
         public void actionPerformed(ActionEvent e){
             try {
-                this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("GetVideo##"+ InetAddress.getLocalHost().getHostAddress() + "\n");
+                if (this.VideoFilneName.equals("")) {
+                    this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("GetVideo##"+ InetAddress.getLocalHost().getHostAddress() + "\n");
+                } else {
+                    this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("GetVideo#" + this.VideoFilneName + "#"+ InetAddress.getLocalHost().getHostAddress() + "\n");
+                }
+
             } catch (UnknownHostException unknownHostException) {
                 unknownHostException.printStackTrace();
             }
