@@ -78,19 +78,11 @@ public class Bootstrapper {
         vizinhos.put(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
 
         ThreadOTTReceiver receiver         = new ThreadOTTReceiver(true, ipAdress, dis, socket, vizinhos, rotaFluxo, ds, pq);
-        ThreadOTTReceiverUDP receiverUDP   = new ThreadOTTReceiverUDP(ds, pq);
-
         ThreadOTTSender sender             = new ThreadOTTSender(socket, dos, vizinhos.get(dadosConnection[1]).getMessagesToSend());
-        ThreadOTTSenderUDP senderUDP       = new ThreadOTTSenderUDP(ds, pq);
-
         ThreadSendControlMessage controler = new ThreadSendControlMessage(dos);
 
         receiver.start();
-        receiverUDP.start();
-
         sender.start();
-        senderUDP.start();
-
         controler.start();
 
     }
@@ -125,6 +117,9 @@ public class Bootstrapper {
 
         HashMap <String, Set<String>> topologiaRede = readJSonFile();
         Topologia topologia  = new Topologia(topologiaRede);
+
+        ThreadOTTSenderUDP senderUDP = new ThreadOTTSenderUDP(RTPsocket, queue);
+        senderUDP.start();
 
         String ipAdress = InetAddress.getLocalHost().getHostAddress();
         ServerSocket ss = new ServerSocket(Integer.parseInt("8080"));

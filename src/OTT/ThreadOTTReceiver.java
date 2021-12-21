@@ -128,13 +128,12 @@ public class ThreadOTTReceiver extends Thread{
                 }
             }
         }
-        System.out.println(clientIPAddr.toString());
 
         File f = new File(videoFileName);
 
         if (f.exists() && clientIPAddr != null) {
             //Create a Main object
-            Servidor s = new Servidor(this.ds, this.pq, clientIPAddr, videoFileName);
+            Servidor s = new Servidor(this.ds, this.pq, clientIPAddr, mensagemControlo[2], videoFileName);
 
             //show GUI: (opcional!)
             s.pack();
@@ -142,7 +141,6 @@ public class ThreadOTTReceiver extends Thread{
         }
         else
             System.out.println("Ficheiro de video não existe: " + videoFileName);
-
 
     }
 

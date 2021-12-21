@@ -15,7 +15,7 @@ import java.util.TreeSet;
 
 public class OTT {
 
-	private static void estabeleConnectioVizinho(String vizinho, Map<String, DadosVizinho> vizinhos, String ipAdress, Rota rotaFluxo, DatagramSocket ds, PacketQueue pq) throws IOException {
+	private static void estabeleConnectioVizinho(String vizinho, Map<String, DadosVizinho> vizinhos, String ipAdress, Rota rotaFluxo, DatagramSocket ds, PacketQueue pq, RTPpacketQueue rtpQueue) throws IOException {
 		Socket socket = new Socket(vizinho, 8080);
 
 		DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
@@ -29,7 +29,7 @@ public class OTT {
 			dos.flush();
 
 			ThreadOTTReceiver receiver         = new ThreadOTTReceiver(false, ipAdress, dis, socket, vizinhos, rotaFluxo, ds, pq);
-			ThreadOTTReceiverUDP receiverUDP   = new ThreadOTTReceiverUDP(ds, pq);
+			ThreadOTTReceiverUDP receiverUDP   = new ThreadOTTReceiverUDP(ds, pq, ipAdress, rotaFluxo, rtpQueue);
 
 			ThreadOTTSender sender       = new ThreadOTTSender(socket, dos, vizinhos.get(vizinho).getMessagesToSend());
 			ThreadOTTSenderUDP senderUDP = new ThreadOTTSenderUDP(ds, pq);
@@ -42,12 +42,13 @@ public class OTT {
 		}
 	}
 
-	private static void estabeleConnectioVizinhoWaiting(String[] dadosConnection, Map<String, DadosVizinho> vizinhos, DataOutputStream dos, BufferedReader dis, Socket socket, String ipAdress, Rota rotaFluxo, DatagramSocket ds, PacketQueue pq) throws IOException {
+	private static void estabeleConnectioVizinhoWaiting(String[] dadosConnection, Map<String, DadosVizinho> vizinhos, DataOutputStream dos, BufferedReader dis, Socket socket, String ipAdress, Rota rotaFluxo, DatagramSocket ds, PacketQueue pq, RTPpacketQueue rtpQueue) throws IOException {
+
 		if (dadosConnection.length > 1 && dadosConnection[0].equals("VIZINHO")) {
 			vizinhos.put(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
 
 			ThreadOTTReceiver receiver       = new ThreadOTTReceiver(false, ipAdress, dis, socket, vizinhos, rotaFluxo, ds, pq);
-			ThreadOTTReceiverUDP receiverUDP = new ThreadOTTReceiverUDP(ds, pq);
+			ThreadOTTReceiverUDP receiverUDP = new ThreadOTTReceiverUDP(ds, pq, ipAdress, rotaFluxo, rtpQueue);
 
 			ThreadOTTSender sender       = new ThreadOTTSender(socket, dos, vizinhos.get(dadosConnection[1]).getMessagesToSend());
 			ThreadOTTSenderUDP senderUDP = new ThreadOTTSenderUDP(ds, pq);
@@ -74,6 +75,7 @@ public class OTT {
 
 		DatagramSocket RTPsocket = new DatagramSocket(8888);
 		PacketQueue queue        = new PacketQueue();
+		RTPpacketQueue rtpQueue  = new RTPpacketQueue();
 
 		Socket socketServidorInicial   = new Socket(args[0], 8080);
 
@@ -104,7 +106,7 @@ public class OTT {
 		// Tenta ligar a outros OTTs
 		for (String vizinho : vizinhos.keySet()) {
 			try {
-				estabeleConnectioVizinho(vizinho, vizinhos, ipAdress, rotaFluxo, RTPsocket, queue);
+				estabeleConnectioVizinho(vizinho, vizinhos, ipAdress, rotaFluxo, RTPsocket, queue, rtpQueue);
 			}
 			catch (UnknownHostException | ConnectException ignored) { }
 		}
@@ -121,7 +123,7 @@ public class OTT {
 			//System.out.println(linha);
 			String[] dadosConnection = linha.split("-");
 
-			estabeleConnectioVizinhoWaiting(dadosConnection, vizinhos, dos, dis, socket, ipAdress, rotaFluxo, RTPsocket,queue);
+			estabeleConnectioVizinhoWaiting(dadosConnection, vizinhos, dos, dis, socket, ipAdress, rotaFluxo, RTPsocket, queue, rtpQueue);
 
 		}
 

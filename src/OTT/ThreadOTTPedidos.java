@@ -3,15 +3,20 @@ package OTT;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Map;
 
 public class ThreadOTTPedidos extends Thread {
 
+    private DatagramSocket ds;
+    private RTPpacketQueue rtpQueue;
     private Map<String, DadosVizinho> vizinhos;
     private Rota rotaFluxo;
 
-    public ThreadOTTPedidos(Map<String, DadosVizinho> vizinhos, Rota rotaFluxo) {
+    public ThreadOTTPedidos(DatagramSocket ds, RTPpacketQueue rtpQueue, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo) {
+        this.ds = ds;
+        this.rtpQueue = rtpQueue;
         this.vizinhos = vizinhos;
         this.rotaFluxo = rotaFluxo;
     }
@@ -25,7 +30,8 @@ public class ThreadOTTPedidos extends Thread {
             while (!pedido.equals("exit")) {
 
                 if (pedido.equals("get")) {
-                    this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("GetVideo##"+ InetAddress.getLocalHost().getHostAddress() + "\n");
+                    Cliente cli = new Cliente(ds, rtpQueue, vizinhos, rotaFluxo);
+                    //this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("GetVideo##"+ InetAddress.getLocalHost().getHostAddress() + "\n");
                 }
 
                 System.out.println(pedido);
