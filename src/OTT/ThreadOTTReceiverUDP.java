@@ -22,7 +22,7 @@ public class ThreadOTTReceiverUDP extends Thread {
                 byte[] conteudoPacote = new byte[dp.getLength()];
                 System.arraycopy(dp.getData(), 0, conteudoPacote, 0, dp.getLength());
 
-                
+                System.out.println(conteudoPacote.length);
 
             } catch (Exception ignored) {}
         }
