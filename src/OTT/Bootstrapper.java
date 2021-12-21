@@ -5,6 +5,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.*;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -71,17 +72,25 @@ public class Bootstrapper {
         return topologiaRede;
     }
 
-    public static void estabeleConnectioVizinho(Map<String, DadosVizinho> vizinhos, DataOutputStream dos, BufferedReader dis, Socket socket, Rota rotaFluxo, String[] dadosConnection, String ipAdress) {
+    public static void estabeleConnectioVizinho(Map<String, DadosVizinho> vizinhos, DataOutputStream dos, BufferedReader dis, Socket socket, Rota rotaFluxo, String[] dadosConnection, String ipAdress, DatagramSocket ds, PacketQueue pq) {
 
         rotaFluxo.addDestinoVizinho(dadosConnection[1]);
         vizinhos.put(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
 
-        ThreadOTTReceiver receiver         = new ThreadOTTReceiver(ipAdress, dis, socket, vizinhos, rotaFluxo);
+        ThreadOTTReceiver receiver         = new ThreadOTTReceiver(true, ipAdress, dis, socket, vizinhos, rotaFluxo, ds, pq);
+        ThreadOTTReceiverUDP receiverUDP   = new ThreadOTTReceiverUDP(ds, pq);
+
         ThreadOTTSender sender             = new ThreadOTTSender(socket, dos, vizinhos.get(dadosConnection[1]).getMessagesToSend());
+        ThreadOTTSenderUDP senderUDP       = new ThreadOTTSenderUDP(ds, pq);
+
         ThreadSendControlMessage controler = new ThreadSendControlMessage(dos);
 
         receiver.start();
+        receiverUDP.start();
+
         sender.start();
+        senderUDP.start();
+
         controler.start();
 
     }
@@ -108,6 +117,9 @@ public class Bootstrapper {
 
     public static void main(String[] args) throws Exception {
 
+        DatagramSocket RTPsocket = new DatagramSocket(8888);
+        PacketQueue queue        = new PacketQueue();
+
         Map<String, DadosVizinho> vizinhos = new HashMap<>();
         Rota rotaFluxo = new Rota();
 
@@ -126,7 +138,7 @@ public class Bootstrapper {
             String[] dadosConnection = line.split("-");
 
             if (dadosConnection.length > 1 && dadosConnection[0].equals("VIZINHO")) {
-                estabeleConnectioVizinho(vizinhos, dos, dis, socket, rotaFluxo, dadosConnection, ipAdress);
+                estabeleConnectioVizinho(vizinhos, dos, dis, socket, rotaFluxo, dadosConnection, ipAdress, RTPsocket, queue);
             } else {
                 estabeleConnectioInicial(topologia, dos, dis, socket, line);
             }

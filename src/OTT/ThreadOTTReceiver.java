@@ -1,25 +1,34 @@
 package OTT;
 
+import javax.xml.crypto.Data;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
 
 public class ThreadOTTReceiver extends Thread{
+    private boolean isBootstrapper;
     private String ipOTT;
     private BufferedReader dis;
     private Socket s;
     private Map<String, DadosVizinho> vizinhos;
     private Rota rotaFluxo;
+    private DatagramSocket ds;
+    private PacketQueue pq;
 
-    public ThreadOTTReceiver(String ipOTT, BufferedReader dis, Socket s, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo) {
+    public ThreadOTTReceiver(boolean isBootstrapper, String ipOTT, BufferedReader dis, Socket s, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo, DatagramSocket ds, PacketQueue pq) {
+        this.isBootstrapper = isBootstrapper;
         this.ipOTT = ipOTT;
         this.dis = dis;
         this.s = s;
         this.vizinhos = vizinhos;
         this.rotaFluxo = rotaFluxo;
+        this.ds = ds;
+        this.pq = pq;
     }
 
     public void adicionaMensagemControloVizinhos (String[] mensagemControlo) throws UnknownHostException {
@@ -93,6 +102,49 @@ public class ThreadOTTReceiver extends Thread{
 
     }
 
+    // GetVideo#nomeVideo#10.0.0.10
+    private void envioVideoParaOTT(String[] mensagemControlo) throws UnknownHostException {
+
+        String videoFileName;
+
+        if (!mensagemControlo[1].equals("")) {
+            videoFileName = mensagemControlo[1];
+            System.out.println("Servidor: VideoFileName indicado como parametro: " + videoFileName);
+        } else  {
+            videoFileName = "../MovieFiles/movie.Mjpeg";
+            System.out.println("Servidor: parametro não foi indicado. VideoFileName = " + videoFileName);
+        }
+
+        InetAddress clientIPAddr = null;
+
+        if (rotaFluxo.getDestinosVizinhos().containsKey(mensagemControlo[2])) {
+            clientIPAddr = InetAddress.getByName(mensagemControlo[2]);
+        }
+        else {
+            for (String ipAdress : rotaFluxo.getDestinosVizinhos().keySet()) {
+                if (rotaFluxo.getDestinosVizinhos().get(ipAdress).contains(mensagemControlo[2])) {
+                    clientIPAddr = InetAddress.getByName(ipAdress);
+                    break;
+                }
+            }
+        }
+
+        File f = new File(videoFileName);
+
+        if (f.exists() && clientIPAddr != null) {
+            //Create a Main object
+            Servidor s = new Servidor(ds, pq, clientIPAddr);
+
+            //show GUI: (opcional!)
+            s.pack();
+            s.setVisible(true);
+        }
+        else
+            System.out.println("Ficheiro de video não existe: " + videoFileName);
+
+
+    }
+
 
     public void run () {
 	    String line;
@@ -109,6 +161,9 @@ public class ThreadOTTReceiver extends Thread{
    		        else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("DontUseMeAsDestiny")) {
    		            removeMeFromDestiny(mensagemControlo);
                 }
+   		        else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("GetVideo") && this.isBootstrapper) {
+   		            envioVideoParaOTT(mensagemControlo);
+                }
    		        System.out.println(line);
 
 		    }
@@ -116,5 +171,6 @@ public class ThreadOTTReceiver extends Thread{
         	System.out.println(e.getMessage());
         }
     }
+
 
 }
