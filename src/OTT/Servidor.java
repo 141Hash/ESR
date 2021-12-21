@@ -48,7 +48,7 @@ public class Servidor extends JFrame implements ActionListener {
       //--------------------------
       //Constructor
       //--------------------------
-      public Servidor(DatagramSocket ds, PacketQueue pq, InetAddress clientIPAddr) {
+      public Servidor(DatagramSocket ds, PacketQueue pq, InetAddress clientIPAddr, String videoFileName) {
         //init Frame
         super("Servidor");
 
@@ -60,9 +60,10 @@ public class Servidor extends JFrame implements ActionListener {
 
         try {
         RTPsocket = ds; //init RTP socket
-          queue = pq;
+        queue = pq;
+        VideoFileName = videoFileName;
         ClientIPAddr = clientIPAddr;
-        System.out.println("Servidor: socket " + ClientIPAddr);
+        System.out.println("Servidor: socket" + ClientIPAddr);
         video = new VideoStream(VideoFileName); //init the VideoStream object:
         System.out.println("Servidor: vai enviar video da file " + VideoFileName);
 

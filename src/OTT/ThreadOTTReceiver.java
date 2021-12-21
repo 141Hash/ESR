@@ -133,7 +133,7 @@ public class ThreadOTTReceiver extends Thread{
 
         if (f.exists() && clientIPAddr != null) {
             //Create a Main object
-            Servidor s = new Servidor(ds, pq, clientIPAddr);
+            Servidor s = new Servidor(ds, pq, clientIPAddr, videoFileName);
 
             //show GUI: (opcional!)
             s.pack();
