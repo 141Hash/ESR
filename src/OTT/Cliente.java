@@ -55,6 +55,7 @@ public class Cliente {
            public void windowClosing(WindowEvent e) {
                f.setVisible(false); //you can't see me!
                f.dispose();
+               cTimer.stop();
            }
         });
 
