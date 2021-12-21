@@ -78,6 +78,10 @@ public class OTT {
 		disServidorInicial.close();
 		socketServidorInicial.close();
 
+		ThreadOTTPedidos threadOTTPedidos = new ThreadOTTPedidos();
+		threadOTTPedidos.start();
+
+
 		// Tenta ligar a outros OTTs
 		for (String vizinho : vizinhos.keySet()) {
 			try {
