@@ -53,7 +53,8 @@ public class Cliente {
         //Frame
         f.addWindowListener(new WindowAdapter() {
            public void windowClosing(WindowEvent e) {
-         System.exit(0);
+               f.setVisible(false); //you can't see me!
+               f.dispose();
            }
         });
 
