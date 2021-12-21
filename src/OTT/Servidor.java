@@ -116,8 +116,8 @@ public class Servidor extends JFrame implements ActionListener {
 
           //send the packet as a DatagramPacket over the UDP socket
           senddp = new DatagramPacket(packet_bits, packet_length, ClientIPAddr, RTP_dest_port);
-          queue.add(senddp);
-          //RTPsocket.send(senddp);
+          //queue.add(senddp);
+          RTPsocket.send(senddp);
 
           System.out.println("Send frame #"+imagenb);
           //print the header bitstream
