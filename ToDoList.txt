@@ -20,3 +20,9 @@
 
 ❌ Servidor:
     .
+
+Fazer Teardown, que é o mesmo que SafeExit (escrever EXIT no terminal)
+
+Mandar mensagem ao Servidor para parar de mandar vídeo
+
+Beacons
