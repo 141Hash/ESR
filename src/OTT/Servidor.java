@@ -140,6 +140,8 @@ public class Servidor extends JFrame implements ActionListener {
                 sTimer = new Timer(FRAME_PERIOD, this); //init Timer para servidor
                 sTimer.setInitialDelay(0);
                 sTimer.setCoalesce(true);
+
+                sTimer.start();
             }
         } catch(Exception ex) {
             System.out.println("Exception caught: "+ex);
