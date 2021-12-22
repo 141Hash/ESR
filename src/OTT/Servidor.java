@@ -25,6 +25,7 @@ public class Servidor extends JFrame implements ActionListener {
     DatagramPacket senddp; //UDP packet containing the video frames (to send)
     DatagramSocket RTPsocket; //socket to be used to send and receive UDP packet
     PacketQueue queue;
+    Rota rotafluxo;
 
     int RTP_dest_port = 8888; //destination port for RTP packets
     InetAddress ClientIPAddr; //Client IP address
@@ -48,9 +49,10 @@ public class Servidor extends JFrame implements ActionListener {
     //--------------------------
     //Constructor
     //--------------------------
-    public Servidor(DatagramSocket ds, PacketQueue pq, InetAddress clientIPAddr, String destinationIPAddr, String videoFileName) {
+    public Servidor(DatagramSocket ds, PacketQueue pq, Rota rotaFluxo, String videoFileName) {
         //init Frame
         super("Servidor");
+
 
         // init para a parte do servidor
         sTimer = new Timer(FRAME_PERIOD, this); //init Timer para servidor
@@ -59,17 +61,14 @@ public class Servidor extends JFrame implements ActionListener {
         sBuf = new byte[MAX_SIZE_PACKET]; //allocate memory for the sending buffer
 
         try {
-            RTPsocket     = ds; // RTP socket
-            queue         = pq; // PacketQueue
-            ClientIPAddr  = clientIPAddr;  // Next Client IP Adress
-            DestinationIPAddr = destinationIPAddr;
+            RTPsocket      = ds; // RTP socket
+            queue          = pq; // PacketQueue
+            this.rotafluxo = rotaFluxo;
 
             VideoFileName = videoFileName; // Video name
             video         = new VideoStream(VideoFileName); //init the VideoStream object:
 
-            System.out.println("Servidor: socket" + ClientIPAddr);
             System.out.println("Servidor: vai enviar video da file " + VideoFileName);
-
         } catch (SocketException e) {
             System.out.println("Servidor: erro no socket: " + e.getMessage());
         } catch (Exception e) {
@@ -81,8 +80,8 @@ public class Servidor extends JFrame implements ActionListener {
             new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
                     //stop the timer and exit
+                    label.setVisible(false); //you can't see me!
                     sTimer.stop();
-                    System.exit(0);
                 }
             }
         );
@@ -120,16 +119,17 @@ public class Servidor extends JFrame implements ActionListener {
                 rtp_packet.getpacket(packet_bits);
 
                 //send the packet as a DatagramPacket over the UDP socket
-                senddp = new DatagramPacket(packet_bits, packet_length, ClientIPAddr, RTP_dest_port);
-                queue.add(senddp);
-                //RTPsocket.send(senddp);
+                for (String vizinho : this.rotafluxo.getDestinosVizinhos().keySet()) {
+                    senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(vizinho), RTP_dest_port);
+                    queue.add(senddp);
+                }
 
                 System.out.println("Send frame #"+imagenb);
                 //print the header bitstream
                 rtp_packet.printheader();
 
                 //update GUI
-                //label.setText("Send frame #" + imagenb);
+                label.setText("Send frame #" + imagenb);
 
             } catch(Exception ex) {
                 System.out.println("Exception caught: "+ex);
@@ -147,8 +147,10 @@ public class Servidor extends JFrame implements ActionListener {
             //send the packet as a DatagramPacket over the UDP socket
             senddp = new DatagramPacket(packet_bits, packet_length, ClientIPAddr, RTP_dest_port);
             queue.add(senddp);
+
+            imagenb = 0;
             //if we have reached the end of the video file, stop the timer
-            sTimer.stop();
+            //sTimer.stop();
         }
     }
 

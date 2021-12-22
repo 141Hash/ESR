@@ -109,45 +109,12 @@ public class ThreadOTTReceiver extends Thread{
 
         String videoFileName;
 
-        if (!mensagemControlo[1].equals("")) {
-            videoFileName = mensagemControlo[1];
-            System.out.println("Servidor: VideoFileName indicado como parametro: " + videoFileName);
-        } else  {
-            videoFileName = "../MovieFiles/movie.Mjpeg";
-            System.out.println("Servidor: parametro não foi indicado. VideoFileName = " + videoFileName);
-        }
 
-        InetAddress clientIPAddr = null;
-
-        if (rotaFluxo.getDestinosVizinhos().containsKey(mensagemControlo[2])) {
-            clientIPAddr = InetAddress.getByName(mensagemControlo[2]);
-        }
-        else {
-            for (String ipAdress : rotaFluxo.getDestinosVizinhos().keySet()) {
-                if (rotaFluxo.getDestinosVizinhos().get(ipAdress).contains(mensagemControlo[2])) {
-                    clientIPAddr = InetAddress.getByName(ipAdress);
-                    break;
-                }
-            }
-        }
-
-        File f = new File(videoFileName);
-
-        if (f.exists() && clientIPAddr != null) {
-            //Create a Main object
-            Servidor s = new Servidor(this.ds, this.pq, clientIPAddr, mensagemControlo[2], videoFileName);
-
-            //show GUI: (opcional!)
-            s.pack();
-            s.setVisible(true);
-        }
-        else
-            System.out.println("Ficheiro de video não existe: " + videoFileName);
 
     }
 
-    public void enviaPedidoParaServidor (String[] mensagemControlo) {
-        String[] ips = mensagemControlo[2].split("-");
+    public void enviaPedidoParaVerStream (String[] mensagemControlo) {
+        String[] ips = mensagemControlo[1].split("-");
         String ipDestino = ips[ips.length-1];
 
         if (this.rotaFluxo.getDestinosVizinhos().containsKey(ipDestino)) {
@@ -180,11 +147,8 @@ public class ThreadOTTReceiver extends Thread{
    		        else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("DontUseMeAsDestiny")) {
    		            removeMeFromDestiny(mensagemControlo);
                 }
-   		        else if (mensagemControlo.length == 3 && mensagemControlo[0].equals("GetVideo")) {
-   		            if (this.isBootstrapper)
-   		                envioVideoParaOTT(mensagemControlo);
-   		            else
-                        enviaPedidoParaServidor(mensagemControlo);
+   		        else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("GetVideo")) {
+   		            enviaPedidoParaVerStream(mensagemControlo);
                 }
    		        System.out.println(line);
 

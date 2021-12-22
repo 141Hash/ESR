@@ -127,11 +127,8 @@ public class Cliente {
 
         public void actionPerformed(ActionEvent e){
             try {
-                if (this.VideoFilneName.equals("")) {
-                    this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("GetVideo##"+ InetAddress.getLocalHost().getHostAddress() + "\n");
-                } else {
-                    this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("GetVideo#" + this.VideoFilneName + "#"+ InetAddress.getLocalHost().getHostAddress() + "\n");
-                }
+
+                this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("GetVideo#" + InetAddress.getLocalHost().getHostAddress() + "\n");
                 querVerStream = true;
 
             } catch (UnknownHostException unknownHostException) {

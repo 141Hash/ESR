@@ -72,12 +72,12 @@ public class Bootstrapper {
         return topologiaRede;
     }
 
-    public static void estabeleConnectioVizinho(Map<String, DadosVizinho> vizinhos, DataOutputStream dos, BufferedReader dis, Socket socket, Rota rotaFluxo, String[] dadosConnection, String ipAdress, DatagramSocket ds, PacketQueue pq) {
+    public static void estabeleConnectioVizinho(Map<String, DadosVizinho> vizinhos, DataOutputStream dos, BufferedReader dis, Socket socket, Rota rotaFluxo, String[] dadosConnection, String ipAdress, DatagramSocket ds, PacketQueue pq, Set<String> destinosQueremVerStream) {
 
         rotaFluxo.addDestinoVizinho(dadosConnection[1]);
         vizinhos.put(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
 
-        ThreadOTTReceiver receiver         = new ThreadOTTReceiver(true, ipAdress, dis, socket, vizinhos, rotaFluxo, ds, pq, null);
+        ThreadOTTReceiver receiver         = new ThreadOTTReceiver(true, ipAdress, dis, socket, vizinhos, rotaFluxo, ds, pq, destinosQueremVerStream);
         ThreadOTTSender sender             = new ThreadOTTSender(socket, dos, vizinhos.get(dadosConnection[1]).getMessagesToSend());
         ThreadSendControlMessage controler = new ThreadSendControlMessage(dos);
 
@@ -107,6 +107,48 @@ public class Bootstrapper {
 
     }
 
+    private static void iniciaServidorStreaming(DatagramSocket ds, PacketQueue pq, Rota rotaFluxo) {
+
+        String videoFileName = "../MovieFiles/movie.Mjpeg";
+        /*
+        if (!mensagemControlo[1].equals("")) {
+            videoFileName = mensagemControlo[1];
+            System.out.println("Servidor: VideoFileName indicado como parametro: " + videoFileName);
+        } else  {
+            videoFileName = "../MovieFiles/movie.Mjpeg";
+            System.out.println("Servidor: parametro não foi indicado. VideoFileName = " + videoFileName);
+        }
+
+        InetAddress clientIPAddr = null;
+
+        if (rotaFluxo.getDestinosVizinhos().containsKey(mensagemControlo[2])) {
+            clientIPAddr = InetAddress.getByName(mensagemControlo[2]);
+        }
+        else {
+            for (String ipAdress : rotaFluxo.getDestinosVizinhos().keySet()) {
+                if (rotaFluxo.getDestinosVizinhos().get(ipAdress).contains(mensagemControlo[2])) {
+                    clientIPAddr = InetAddress.getByName(ipAdress);
+                    break;
+                }
+            }
+        }
+        */
+
+        File f = new File(videoFileName);
+
+        if (f.exists()) {
+            //Create a Main object
+            Servidor s = new Servidor(ds, pq, rotaFluxo, videoFileName);
+
+            //show GUI: (opcional!)
+            s.pack();
+            s.setVisible(true);
+        }
+        else
+            System.out.println("Ficheiro de video não existe: " + videoFileName);
+
+    }
+
     public static void main(String[] args) throws Exception {
 
         DatagramSocket RTPsocket = new DatagramSocket(8888);
@@ -114,6 +156,9 @@ public class Bootstrapper {
 
         Map<String, DadosVizinho> vizinhos = new HashMap<>();
         Rota rotaFluxo = new Rota();
+
+        Set<String> destinosQueremVerStream = new TreeSet<String>();
+        iniciaServidorStreaming(RTPsocket, queue, rotaFluxo);
 
         HashMap <String, Set<String>> topologiaRede = readJSonFile();
         Topologia topologia  = new Topologia(topologiaRede);
@@ -133,7 +178,7 @@ public class Bootstrapper {
             String[] dadosConnection = line.split("-");
 
             if (dadosConnection.length > 1 && dadosConnection[0].equals("VIZINHO")) {
-                estabeleConnectioVizinho(vizinhos, dos, dis, socket, rotaFluxo, dadosConnection, ipAdress, RTPsocket, queue);
+                estabeleConnectioVizinho(vizinhos, dos, dis, socket, rotaFluxo, dadosConnection, ipAdress, RTPsocket, queue, destinosQueremVerStream);
             } else {
                 estabeleConnectioInicial(topologia, dos, dis, socket, line);
             }
