@@ -3,7 +3,7 @@ package OTT;
 public class RTPpacket {
 
     //size of the RTP header:
-    static int HEADER_SIZE = 16;
+    static int HEADER_SIZE = 12;
 
     //Fields that compose the RTP header
     public int Version;
@@ -15,7 +15,6 @@ public class RTPpacket {
     public int SequenceNumber;
     public int TimeStamp;
     public int Ssrc;
-    public String DestinationIP;
 
     //Bitstream of the RTP header
     public byte[] header;
@@ -30,7 +29,7 @@ public class RTPpacket {
     //--------------------------
     //Constructor of an RTPpacket object from header fields and payload bitstream
     //--------------------------
-    public RTPpacket(int PType, int Framenb, int Time, byte[] data, int data_length, String destination){
+    public RTPpacket(int PType, int Framenb, int Time, byte[] data, int data_length){
         //fill by default header fields:
         Version = 2;
         Padding = 0;
@@ -43,7 +42,6 @@ public class RTPpacket {
         SequenceNumber = Framenb;
         TimeStamp = Time;
         PayloadType = PType;
-        DestinationIP = destination;
 
         //build the header bistream:
         //--------------------------
@@ -62,12 +60,6 @@ public class RTPpacket {
         header[9] = (byte)(Ssrc >> 16);
         header[10] = (byte)(Ssrc >> 8);
         header[11] = (byte)(Ssrc & 0xFF);
-
-        String[] auxiliar = destination.split("\\.");
-        header[12] = (byte) (Integer.parseInt(auxiliar[0]));
-        header[13] = (byte) (Integer.parseInt(auxiliar[1]));
-        header[14] = (byte) (Integer.parseInt(auxiliar[2]));
-        header[15] = (byte) (Integer.parseInt(auxiliar[3]));
 
         //fill the payload bitstream:
         //--------------------------
@@ -112,7 +104,6 @@ public class RTPpacket {
             PayloadType = header[1] & 127;
             SequenceNumber = unsigned_int(header[3]) + 256*unsigned_int(header[2]);
             TimeStamp = unsigned_int(header[7]) + 256*unsigned_int(header[6]) + 65536*unsigned_int(header[5]) + 16777216*unsigned_int(header[4]);
-            DestinationIP = unsigned_int(header[12]) + "." + unsigned_int(header[13]) + "." + unsigned_int(header[14]) + "." + unsigned_int(header[15]);
         }
     }
 
@@ -138,13 +129,6 @@ public class RTPpacket {
     //--------------------------
     public int getlength() {
     return(payload_size + HEADER_SIZE);
-    }
-
-    //--------------------------
-    //getDestination: return the destination of RTP packet
-    //--------------------------
-    public String getDestinationIP() {
-        return DestinationIP;
     }
 
 

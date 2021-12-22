@@ -104,15 +104,6 @@ public class ThreadOTTReceiver extends Thread{
 
     }
 
-    // GetVideo#nomeVideo#10.0.0.10
-    private void envioVideoParaOTT(String[] mensagemControlo) throws UnknownHostException {
-
-        String videoFileName;
-
-
-
-    }
-
     public void enviaPedidoParaVerStream (String[] mensagemControlo) {
         String[] ips = mensagemControlo[1].split("-");
         String ipDestino = ips[ips.length-1];

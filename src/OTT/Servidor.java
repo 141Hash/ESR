@@ -28,8 +28,6 @@ public class Servidor extends JFrame implements ActionListener {
     Rota rotafluxo;
 
     int RTP_dest_port = 8888; //destination port for RTP packets
-    InetAddress ClientIPAddr; //Client IP address
-    String DestinationIPAddr; // Destination IP Adress
 
     static String VideoFileName; //video file to request to the server
 
@@ -52,7 +50,6 @@ public class Servidor extends JFrame implements ActionListener {
     public Servidor(DatagramSocket ds, PacketQueue pq, Rota rotaFluxo, String videoFileName) {
         //init Frame
         super("Servidor");
-
 
         // init para a parte do servidor
         sTimer = new Timer(FRAME_PERIOD, this); //init Timer para servidor
@@ -99,19 +96,43 @@ public class Servidor extends JFrame implements ActionListener {
     //------------------------
     public void actionPerformed(ActionEvent e) {
 
-        //if the current image nb is less than the length of the video
-        if (imagenb < VIDEO_LENGTH) {
-            //update current imagenb
-            imagenb++;
+        try {
+            //if the current image nb is less than the length of the video
+            if (imagenb < VIDEO_LENGTH) {
+                //update current imagenb
+                imagenb++;
 
-            try {
-                //get next frame to send from the video, as well as its size
-                int image_length = video.getnextframe(sBuf);
 
-                //Builds an RTPpacket object containing the frame
-                RTPpacket rtp_packet = new RTPpacket(MJPEG_TYPE, imagenb, imagenb*FRAME_PERIOD, sBuf, image_length, DestinationIPAddr);
+                    //get next frame to send from the video, as well as its size
+                    int image_length = video.getnextframe(sBuf);
 
-                //get to total length of the full rtp packet to send
+                    //Builds an RTPpacket object containing the frame
+                    RTPpacket rtp_packet = new RTPpacket(MJPEG_TYPE, imagenb, imagenb*FRAME_PERIOD, sBuf, image_length);
+
+                    //get to total length of the full rtp packet to send
+                    int packet_length = rtp_packet.getlength();
+
+                    //retrieve the packet bitstream and store it in an array of bytes
+                    byte[] packet_bits = new byte[packet_length];
+                    rtp_packet.getpacket(packet_bits);
+
+                    //send the packet as a DatagramPacket over the UDP socket
+                    for (String vizinho : this.rotafluxo.getDestinosVizinhos().keySet()) {
+                        senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(vizinho), RTP_dest_port);
+                        queue.add(senddp);
+                    }
+
+                    System.out.println("Send frame #"+imagenb);
+                    //print the header bitstream
+                    rtp_packet.printheader();
+
+                    //update GUI
+                    label.setText("Send frame #" + imagenb);
+
+
+            } else {
+                RTPpacket rtp_packet = new RTPpacket(27, imagenb, imagenb * FRAME_PERIOD, new byte[0], 0);
+
                 int packet_length = rtp_packet.getlength();
 
                 //retrieve the packet bitstream and store it in an array of bytes
@@ -124,33 +145,13 @@ public class Servidor extends JFrame implements ActionListener {
                     queue.add(senddp);
                 }
 
-                System.out.println("Send frame #"+imagenb);
-                //print the header bitstream
-                rtp_packet.printheader();
-
-                //update GUI
-                label.setText("Send frame #" + imagenb);
-
-            } catch(Exception ex) {
-                System.out.println("Exception caught: "+ex);
-                System.exit(0);
+                imagenb = 0;
+                //if we have reached the end of the video file, stop the timer
+                //sTimer.stop();
             }
-        } else {
-            RTPpacket rtp_packet = new RTPpacket(27, imagenb, imagenb * FRAME_PERIOD, new byte[0], 0, DestinationIPAddr);
-
-            int packet_length = rtp_packet.getlength();
-
-            //retrieve the packet bitstream and store it in an array of bytes
-            byte[] packet_bits = new byte[packet_length];
-            rtp_packet.getpacket(packet_bits);
-
-            //send the packet as a DatagramPacket over the UDP socket
-            senddp = new DatagramPacket(packet_bits, packet_length, ClientIPAddr, RTP_dest_port);
-            queue.add(senddp);
-
-            imagenb = 0;
-            //if we have reached the end of the video file, stop the timer
-            //sTimer.stop();
+        } catch(Exception ex) {
+            System.out.println("Exception caught: "+ex);
+            System.exit(0);
         }
     }
 
