@@ -32,3 +32,6 @@
 ❌ Alterar de maneira a que seja feita uma stream e não a replicação de um vídeo
 
 While true e depois while 0
+
+
+Enviar ping da rota sempre que ligamos um novo Nodo. Ativar condition com um signal -> Meter também uma thread que lhe manda um signal de determinado em determinado tempo
