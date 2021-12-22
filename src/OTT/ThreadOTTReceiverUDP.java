@@ -29,6 +29,7 @@ public class ThreadOTTReceiverUDP extends Thread {
 
         if (this.querVerStream) {
             rtpQueue.add(rtp_packet);
+            System.out.println("Recebi Pacote");
         }
 
         int packet_length = rtp_packet.getlength();
