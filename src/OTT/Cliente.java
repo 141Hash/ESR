@@ -39,16 +39,13 @@ public class Cliente {
 
     Timer cTimer; //timer used to receive data from the UDP socket
     byte[] cBuf; //buffer used to store data received from the server
-    boolean Playing = true;
     String VideoFilneName;
-
-    static boolean querVerStream;
  
     //--------------------------
     //Constructor
     //--------------------------
 
-    public Cliente(DatagramSocket ds, RTPpacketQueue rtpQueue, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo, String videoFilneName, boolean querVerStream) {
+    public Cliente(DatagramSocket ds, RTPpacketQueue rtpQueue, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo, String videoFilneName) {
         //build GUI
         //--------------------------
 
@@ -98,7 +95,6 @@ public class Cliente {
             this.vizinhos = vizinhos;
             this.rotaFluxo = rotaFluxo;
             this.VideoFilneName = videoFilneName;
-            this.querVerStream = querVerStream;
             rtPpacketQueue = rtpQueue;
             RTPsocket = ds; //init RTP socket (o mesmo para o cliente e servidor)
             RTPsocket.setSoTimeout(5000); // setimeout to 5s
@@ -129,7 +125,7 @@ public class Cliente {
             try {
 
                 this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("GetVideo#" + InetAddress.getLocalHost().getHostAddress() + "\n");
-                querVerStream = true;
+                OTT.querVerStream = true;
 
             } catch (UnknownHostException unknownHostException) {
                 unknownHostException.printStackTrace();
@@ -156,7 +152,7 @@ public class Cliente {
         }
 
         public void actionPerformed(ActionEvent e){
-            querVerStream = false;
+            OTT.querVerStream = false;
             System.out.println("Play Pause pressed !");
             //start the timers ...
             cTimer.stop();
@@ -186,7 +182,7 @@ public class Cliente {
         public void actionPerformed(ActionEvent e) {
 
             try {
-                if (querVerStream) {
+                if (OTT.querVerStream) {
                     //create an RTPpacket object from the DP
                     RTPpacket rtp_packet = rtPpacketQueue.remove();
 

@@ -110,29 +110,6 @@ public class Bootstrapper {
     private static void iniciaServidorStreaming(DatagramSocket ds, PacketQueue pq, Rota rotaFluxo) {
 
         String videoFileName = "../MovieFiles/movie.Mjpeg";
-        /*
-        if (!mensagemControlo[1].equals("")) {
-            videoFileName = mensagemControlo[1];
-            System.out.println("Servidor: VideoFileName indicado como parametro: " + videoFileName);
-        } else  {
-            videoFileName = "../MovieFiles/movie.Mjpeg";
-            System.out.println("Servidor: parametro não foi indicado. VideoFileName = " + videoFileName);
-        }
-
-        InetAddress clientIPAddr = null;
-
-        if (rotaFluxo.getDestinosVizinhos().containsKey(mensagemControlo[2])) {
-            clientIPAddr = InetAddress.getByName(mensagemControlo[2]);
-        }
-        else {
-            for (String ipAdress : rotaFluxo.getDestinosVizinhos().keySet()) {
-                if (rotaFluxo.getDestinosVizinhos().get(ipAdress).contains(mensagemControlo[2])) {
-                    clientIPAddr = InetAddress.getByName(ipAdress);
-                    break;
-                }
-            }
-        }
-        */
 
         File f = new File(videoFileName);
 

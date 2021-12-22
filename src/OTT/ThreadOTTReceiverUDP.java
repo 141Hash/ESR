@@ -13,21 +13,19 @@ public class ThreadOTTReceiverUDP extends Thread {
     private Rota rotaFluxo;
     private RTPpacketQueue rtpQueue;
     private Set<String> destinosQueremVerStream;
-    private boolean querVerStream;
 
-    public ThreadOTTReceiverUDP(DatagramSocket ds, PacketQueue pq, String ipAdress, Rota rotaFluxo, RTPpacketQueue rtpQueue, Set<String> destinosQueremVerStream, boolean querVerStream) {
+    public ThreadOTTReceiverUDP(DatagramSocket ds, PacketQueue pq, String ipAdress, Rota rotaFluxo, RTPpacketQueue rtpQueue, Set<String> destinosQueremVerStream) {
         this.ds = ds;
         this.pq = pq;
         this.ipAdress = ipAdress;
         this.rotaFluxo = rotaFluxo;
         this.rtpQueue = rtpQueue;
         this.destinosQueremVerStream = destinosQueremVerStream;
-        this.querVerStream = querVerStream;
     }
 
     public void recebePacketVideo (RTPpacket rtp_packet) throws UnknownHostException {
 
-        if (this.querVerStream) {
+        if (OTT.querVerStream) {
             rtpQueue.add(rtp_packet);
             System.out.println("Recebi Pacote");
         }
@@ -56,7 +54,7 @@ public class ThreadOTTReceiverUDP extends Thread {
 
                 RTPpacket rtp_packet = new RTPpacket(dp.getData(), dp.getLength());
 
-                if (rtp_packet.getpayloadtype() == 26 || rtp_packet.getpayloadtype() == 27) {
+                if (rtp_packet.getpayloadtype() == 26) {
                     recebePacketVideo(rtp_packet);
                 } else if (rtp_packet.getpayloadtype() == 1) {
                     // Podemos colocar aqui os KeepAlive por exemplo (Beacons)
