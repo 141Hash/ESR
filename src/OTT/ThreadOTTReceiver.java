@@ -122,6 +122,17 @@ public class ThreadOTTReceiver extends Thread{
         this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend(mensagemControlo[0] + "#" + mensagemControlo[1]  + "-" + this.ipOTT + "\n");
     }
 
+    public void enviaPedidoParaPausarStream (String[] mensagemControlo) {
+        String ipDestino = mensagemControlo[1];
+
+        if (this.destinosQueremVerStream.contains(ipDestino)) {
+            this.destinosQueremVerStream.remove(ipDestino);
+        }
+        if (this.destinosQueremVerStream.size() == 0 && !OTT.querVerStream) {
+            this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend(mensagemControlo[0] + "#" + this.ipOTT + "\n");
+        }
+    }
+
 
     public void run () {
 	    String line;
@@ -140,6 +151,9 @@ public class ThreadOTTReceiver extends Thread{
                 }
    		        else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("GetVideo")) {
    		            enviaPedidoParaVerStream(mensagemControlo);
+                }
+                else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("PauseVideo")) {
+                    enviaPedidoParaPausarStream(mensagemControlo);
                 }
    		        System.out.println(line);
 

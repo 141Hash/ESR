@@ -27,7 +27,6 @@ public class ThreadOTTReceiverUDP extends Thread {
 
         if (OTT.querVerStream) {
             rtpQueue.add(rtp_packet);
-            System.out.println("Recebi Pacote");
         }
 
         int packet_length = rtp_packet.getlength();
@@ -59,6 +58,8 @@ public class ThreadOTTReceiverUDP extends Thread {
                 } else if (rtp_packet.getpayloadtype() == 1) {
                     // Podemos colocar aqui os KeepAlive por exemplo (Beacons)
                 }
+
+                System.out.println("Recebi pacote");
 
 
             } catch (Exception ignored) {}

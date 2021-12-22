@@ -36,6 +36,7 @@ public class Cliente {
 
     Rota rotaFluxo;
     Map<String, DadosVizinho> vizinhos;
+    Set<String> destinosQueremVerStream;
 
     Timer cTimer; //timer used to receive data from the UDP socket
     byte[] cBuf; //buffer used to store data received from the server
@@ -45,7 +46,7 @@ public class Cliente {
     //Constructor
     //--------------------------
 
-    public Cliente(DatagramSocket ds, RTPpacketQueue rtpQueue, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo, String videoFilneName) {
+    public Cliente(DatagramSocket ds, RTPpacketQueue rtpQueue, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo, String videoFilneName, Set<String> destinosQueremVerStream) {
         //build GUI
         //--------------------------
 
@@ -67,7 +68,7 @@ public class Cliente {
 
         // handlers... (so dois)
         playButton.addActionListener(new playButtonListener(rotaFluxo, vizinhos, videoFilneName));
-        pauseButton.addActionListener(new pauseButtonListener(rotaFluxo, vizinhos, videoFilneName));
+        pauseButton.addActionListener(new pauseButtonListener(rotaFluxo, vizinhos, videoFilneName, destinosQueremVerStream));
         tearButton.addActionListener(new tearButtonListener());
 
         //Image display label
@@ -96,6 +97,7 @@ public class Cliente {
             this.vizinhos = vizinhos;
             this.rotaFluxo = rotaFluxo;
             this.VideoFilneName = videoFilneName;
+            this.destinosQueremVerStream = destinosQueremVerStream;
             rtPpacketQueue = rtpQueue;
             RTPsocket = ds; //init RTP socket (o mesmo para o cliente e servidor)
             RTPsocket.setSoTimeout(5000); // setimeout to 5s
@@ -144,16 +146,28 @@ public class Cliente {
 
         Rota rotaFluxo;
         Map<String, DadosVizinho> vizinhos;
+        Set<String> destinosQueremVerStream;
         String VideoFilneName;
 
-        public pauseButtonListener(Rota rotaFluxo, Map<String, DadosVizinho> vizinhos, String videoFilneName) {
+        public pauseButtonListener(Rota rotaFluxo, Map<String, DadosVizinho> vizinhos, String videoFilneName, Set<String> destinosQueremVerStream) {
             this.rotaFluxo = rotaFluxo;
             this.vizinhos = vizinhos;
             this.VideoFilneName = videoFilneName;
+            this.destinosQueremVerStream = destinosQueremVerStream;
         }
 
         public void actionPerformed(ActionEvent e){
+
             OTT.querVerStream = false;
+
+            try {
+                if (this.destinosQueremVerStream.size() == 0) {
+                    this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("PauseVideo#" + InetAddress.getLocalHost().getHostAddress() + "\n");
+                }
+            } catch (UnknownHostException unknownHostException) {
+                unknownHostException.printStackTrace();
+            }
+
             System.out.println("Play Pause pressed !");
             //start the timers ...
             cTimer.stop();

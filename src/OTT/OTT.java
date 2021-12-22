@@ -91,7 +91,7 @@ public class OTT {
 		socketServidorInicial.close();
 
 
-		ThreadOTTPedidos threadOTTPedidos = new ThreadOTTPedidos(RTPsocket, rtpQueue, vizinhos, rotaFluxo);
+		ThreadOTTPedidos threadOTTPedidos = new ThreadOTTPedidos(RTPsocket, rtpQueue, vizinhos, rotaFluxo, destinosQueremVerStream);
 		threadOTTPedidos.start();
 
 		ThreadOTTReceiverUDP receiverUDP   = new ThreadOTTReceiverUDP(RTPsocket, queue, ipAdress, rotaFluxo, rtpQueue, destinosQueremVerStream);

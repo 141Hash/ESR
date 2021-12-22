@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Map;
+import java.util.Set;
 
 public class ThreadOTTPedidos extends Thread {
 
@@ -13,12 +14,14 @@ public class ThreadOTTPedidos extends Thread {
     private RTPpacketQueue rtpQueue;
     private Map<String, DadosVizinho> vizinhos;
     private Rota rotaFluxo;
+    private Set<String> destinosQueremVerStream;
 
-    public ThreadOTTPedidos(DatagramSocket ds, RTPpacketQueue rtpQueue, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo) {
+    public ThreadOTTPedidos(DatagramSocket ds, RTPpacketQueue rtpQueue, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo, Set<String> destinosQueremVerStream) {
         this.ds = ds;
         this.rtpQueue = rtpQueue;
         this.vizinhos = vizinhos;
         this.rotaFluxo = rotaFluxo;
+        this.destinosQueremVerStream = destinosQueremVerStream;
     }
 
     public void run() {
@@ -39,7 +42,7 @@ public class ThreadOTTPedidos extends Thread {
                         videoFile = "";
                     }
 
-                    Thread threadCliente = new Thread(() -> { Cliente cli = new Cliente(ds, rtpQueue, vizinhos, rotaFluxo, videoFile); });
+                    Thread threadCliente = new Thread(() -> { Cliente cli = new Cliente(ds, rtpQueue, vizinhos, rotaFluxo, videoFile, destinosQueremVerStream); });
                     threadCliente.start();
 
                 }
