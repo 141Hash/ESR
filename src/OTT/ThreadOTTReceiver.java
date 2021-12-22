@@ -119,7 +119,7 @@ public class ThreadOTTReceiver extends Thread{
             }
         }
 
-        this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend(mensagemControlo + "-" + this.ipOTT + "\n");
+        this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend(mensagemControlo[0] + "#" + mensagemControlo[1]  + "-" + this.ipOTT + "\n");
     }
 
 

@@ -52,6 +52,7 @@ public class Cliente {
         //Frame
         f.addWindowListener(new WindowAdapter() {
            public void windowClosing(WindowEvent e) {
+               OTT.querVerStream = false;
                f.setVisible(false); //you can't see me!
                f.dispose();
                cTimer.stop();
