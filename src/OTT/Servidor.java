@@ -9,6 +9,7 @@ package OTT;
 import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.nio.charset.StandardCharsets;
 import javax.swing.*;
 import javax.swing.Timer;
 
@@ -131,19 +132,6 @@ public class Servidor extends JFrame implements ActionListener {
 
 
             } else {
-                RTPpacket rtp_packet = new RTPpacket(27, imagenb, imagenb * FRAME_PERIOD, new byte[0], 0);
-
-                int packet_length = rtp_packet.getlength();
-
-                //retrieve the packet bitstream and store it in an array of bytes
-                byte[] packet_bits = new byte[packet_length];
-                rtp_packet.getpacket(packet_bits);
-
-                //send the packet as a DatagramPacket over the UDP socket
-                for (String vizinho : this.rotafluxo.getDestinosVizinhos().keySet()) {
-                    senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(vizinho), RTP_dest_port);
-                    queue.add(senddp);
-                }
 
                 imagenb = 0;
                 //if we have reached the end of the video file, stop the timer
