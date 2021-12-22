@@ -115,11 +115,12 @@ public class Bootstrapper {
 
         if (f.exists()) {
             //Create a Main object
-            Servidor s = new Servidor(ds, pq, rotaFluxo, videoFileName, destinosQueremVerStream);
-
-            //show GUI: (opcional!)
-            s.pack();
-            s.setVisible(true);
+            Thread threadServidor = new Thread(() -> { Servidor s = new Servidor(ds, pq, rotaFluxo, videoFileName, destinosQueremVerStream);
+                                                        //show GUI: (opcional!)
+                                                        s.pack();
+                                                        s.setVisible(true);
+            });
+            threadServidor.start();
         }
         else
             System.out.println("Ficheiro de video não existe: " + videoFileName);

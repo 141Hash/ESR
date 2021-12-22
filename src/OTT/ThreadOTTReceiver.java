@@ -125,9 +125,8 @@ public class ThreadOTTReceiver extends Thread{
     public void enviaPedidoParaPausarStream (String[] mensagemControlo) {
         String ipDestino = mensagemControlo[1];
 
-        if (this.destinosQueremVerStream.contains(ipDestino)) {
-            this.destinosQueremVerStream.remove(ipDestino);
-        }
+        this.destinosQueremVerStream.remove(ipDestino);
+
         if (this.destinosQueremVerStream.size() == 0 && !this.isBootstrapper) {
             if (!OTT.querVerStream)
                 this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend(mensagemControlo[0] + "#" + this.ipOTT + "\n");
