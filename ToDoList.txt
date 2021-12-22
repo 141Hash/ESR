@@ -21,8 +21,14 @@
 ❌ Servidor:
     .
 
-Fazer Teardown, que é o mesmo que SafeExit (escrever EXIT no terminal)
+❌ Fazer Teardown, que é o mesmo que SafeExit (escrever EXIT no terminal)
 
-Mandar mensagem ao Servidor para parar de mandar vídeo
+❌ Mandar mensagem ao Servidor para parar de mandar vídeo
 
-Beacons
+❌ Beacons
+
+
+
+❌ Alterar de maneira a que seja feita uma stream e não a replicação de um vídeo
+
+While true e depois while 0
