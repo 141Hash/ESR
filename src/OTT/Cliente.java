@@ -41,12 +41,14 @@ public class Cliente {
     byte[] cBuf; //buffer used to store data received from the server
     boolean Playing = true;
     String VideoFilneName;
+
+    static boolean querVerStream;
  
     //--------------------------
     //Constructor
     //--------------------------
 
-    public Cliente(DatagramSocket ds, RTPpacketQueue rtpQueue, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo, String videoFilneName) {
+    public Cliente(DatagramSocket ds, RTPpacketQueue rtpQueue, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo, String videoFilneName, boolean querVerStream) {
         //build GUI
         //--------------------------
 
@@ -67,6 +69,7 @@ public class Cliente {
 
         // handlers... (so dois)
         playButton.addActionListener(new playButtonListener(rotaFluxo, vizinhos, videoFilneName));
+        pauseButton.addActionListener(new pauseButtonListener(rotaFluxo, vizinhos, videoFilneName));
         tearButton.addActionListener(new tearButtonListener());
 
         //Image display label
@@ -95,6 +98,7 @@ public class Cliente {
             this.vizinhos = vizinhos;
             this.rotaFluxo = rotaFluxo;
             this.VideoFilneName = videoFilneName;
+            this.querVerStream = querVerStream;
             rtPpacketQueue = rtpQueue;
             RTPsocket = ds; //init RTP socket (o mesmo para o cliente e servidor)
             RTPsocket.setSoTimeout(5000); // setimeout to 5s
@@ -128,6 +132,7 @@ public class Cliente {
                 } else {
                     this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("GetVideo#" + this.VideoFilneName + "#"+ InetAddress.getLocalHost().getHostAddress() + "\n");
                 }
+                querVerStream = true;
 
             } catch (UnknownHostException unknownHostException) {
                 unknownHostException.printStackTrace();
@@ -135,6 +140,29 @@ public class Cliente {
             System.out.println("Play Button pressed !");
                 //start the timers ...
                 cTimer.start();
+        }
+
+    }
+
+    //Handler for Pause button
+    //-----------------------
+    class pauseButtonListener implements ActionListener {
+
+        Rota rotaFluxo;
+        Map<String, DadosVizinho> vizinhos;
+        String VideoFilneName;
+
+        public pauseButtonListener(Rota rotaFluxo, Map<String, DadosVizinho> vizinhos, String videoFilneName) {
+            this.rotaFluxo = rotaFluxo;
+            this.vizinhos = vizinhos;
+            this.VideoFilneName = videoFilneName;
+        }
+
+        public void actionPerformed(ActionEvent e){
+            querVerStream = false;
+            System.out.println("Play Pause pressed !");
+            //start the timers ...
+            cTimer.stop();
         }
 
     }
@@ -161,33 +189,34 @@ public class Cliente {
         public void actionPerformed(ActionEvent e) {
 
             try {
-                //create an RTPpacket object from the DP
-                RTPpacket rtp_packet = rtPpacketQueue.remove();
+                while (querVerStream) {
+                    //create an RTPpacket object from the DP
+                    RTPpacket rtp_packet = rtPpacketQueue.remove();
 
-                if (rtp_packet.getpayloadtype() == 26) {
-                    //print important header fields of the RTP packet received:
-                    System.out.println("Got RTP packet with SeqNum # "+rtp_packet.getsequencenumber()+" TimeStamp "+rtp_packet.gettimestamp()+" ms, of type "+rtp_packet.getpayloadtype());
+                    if (rtp_packet.getpayloadtype() == 26) {
+                        //print important header fields of the RTP packet received:
+                        System.out.println("Got RTP packet with SeqNum # "+rtp_packet.getsequencenumber()+" TimeStamp "+rtp_packet.gettimestamp()+" ms, of type "+rtp_packet.getpayloadtype());
 
-                    //print header bitstream:
-                    rtp_packet.printheader();
+                        //print header bitstream:
+                        rtp_packet.printheader();
 
-                    //get the payload bitstream from the RTPpacket object
-                    int payload_length = rtp_packet.getpayload_length();
-                    byte [] payload = new byte[payload_length];
-                    rtp_packet.getpayload(payload);
+                        //get the payload bitstream from the RTPpacket object
+                        int payload_length = rtp_packet.getpayload_length();
+                        byte [] payload = new byte[payload_length];
+                        rtp_packet.getpayload(payload);
 
-                    //get an Image object from the payload bitstream
-                    Toolkit toolkit = Toolkit.getDefaultToolkit();
-                    Image image = toolkit.createImage(payload, 0, payload_length);
+                        //get an Image object from the payload bitstream
+                        Toolkit toolkit = Toolkit.getDefaultToolkit();
+                        Image image = toolkit.createImage(payload, 0, payload_length);
 
-                    //display the image as an ImageIcon object
-                    icon = new ImageIcon(image);
-                    iconLabel.setIcon(icon);
+                        //display the image as an ImageIcon object
+                        icon = new ImageIcon(image);
+                        iconLabel.setIcon(icon);
+                    }
+                    else if (rtp_packet.getpayloadtype() == 27) {
+                        cTimer.stop();
+                    }
                 }
-                else if (rtp_packet.getpayloadtype() == 27) {
-                    cTimer.stop();
-                }
-
             }
             catch (InterruptedException ignored) { }
         }

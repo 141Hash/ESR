@@ -19,8 +19,9 @@ public class ThreadOTTReceiver extends Thread{
     private Rota rotaFluxo;
     private DatagramSocket ds;
     private PacketQueue pq;
+    private Set<String> destinosQueremVerStream;
 
-    public ThreadOTTReceiver(boolean isBootstrapper, String ipOTT, BufferedReader dis, Socket s, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo, DatagramSocket ds, PacketQueue pq) {
+    public ThreadOTTReceiver(boolean isBootstrapper, String ipOTT, BufferedReader dis, Socket s, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo, DatagramSocket ds, PacketQueue pq, Set<String> destinosQueremVerStream) {
         this.isBootstrapper = isBootstrapper;
         this.ipOTT = ipOTT;
         this.dis = dis;
@@ -29,6 +30,7 @@ public class ThreadOTTReceiver extends Thread{
         this.rotaFluxo = rotaFluxo;
         this.ds = ds;
         this.pq = pq;
+        this.destinosQueremVerStream = destinosQueremVerStream;
     }
 
     public void adicionaMensagemControloVizinhos (String[] mensagemControlo) throws UnknownHostException {
@@ -144,6 +146,24 @@ public class ThreadOTTReceiver extends Thread{
 
     }
 
+    public void enviaPedidoParaServidor (String[] mensagemControlo) {
+        String[] ips = mensagemControlo[2].split("-");
+        String ipDestino = ips[ips.length-1];
+
+        if (this.rotaFluxo.getDestinosVizinhos().containsKey(ipDestino)) {
+            this.destinosQueremVerStream.add(ipDestino);
+        }
+        else {
+            for (String vizinho : this.rotaFluxo.getDestinosVizinhos().keySet()) {
+                if (this.rotaFluxo.getDestinosVizinhos().get(vizinho).contains(ipDestino)) {
+                    this.destinosQueremVerStream.add(vizinho);
+                }
+            }
+        }
+
+        this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend(mensagemControlo + "-" + this.ipOTT + "\n");
+    }
+
 
     public void run () {
 	    String line;
@@ -164,7 +184,7 @@ public class ThreadOTTReceiver extends Thread{
    		            if (this.isBootstrapper)
    		                envioVideoParaOTT(mensagemControlo);
    		            else
-   		                this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend(line + "\n");
+                        enviaPedidoParaServidor(mensagemControlo);
                 }
    		        System.out.println(line);
 

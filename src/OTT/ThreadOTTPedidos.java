@@ -13,12 +13,14 @@ public class ThreadOTTPedidos extends Thread {
     private RTPpacketQueue rtpQueue;
     private Map<String, DadosVizinho> vizinhos;
     private Rota rotaFluxo;
+    private boolean querVerStream;
 
-    public ThreadOTTPedidos(DatagramSocket ds, RTPpacketQueue rtpQueue, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo) {
+    public ThreadOTTPedidos(DatagramSocket ds, RTPpacketQueue rtpQueue, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo, boolean querVerStream) {
         this.ds = ds;
         this.rtpQueue = rtpQueue;
         this.vizinhos = vizinhos;
         this.rotaFluxo = rotaFluxo;
+        this.querVerStream = querVerStream;
     }
 
     public void run() {
@@ -29,7 +31,7 @@ public class ThreadOTTPedidos extends Thread {
 
             while (!pedido.equals("exit")) {
 
-                if (pedido.startsWith("get")) {
+                if (pedido.startsWith("PLAYER")) {
                     String videoFile;
 
                     String[] pedidoArray = pedido.split(" ");
@@ -39,7 +41,7 @@ public class ThreadOTTPedidos extends Thread {
                         videoFile = "";
                     }
 
-                    Thread threadCliente = new Thread(() -> { Cliente cli = new Cliente(ds, rtpQueue, vizinhos, rotaFluxo, videoFile); });
+                    Thread threadCliente = new Thread(() -> { Cliente cli = new Cliente(ds, rtpQueue, vizinhos, rotaFluxo, videoFile, querVerStream); });
                     threadCliente.start();
 
                 }

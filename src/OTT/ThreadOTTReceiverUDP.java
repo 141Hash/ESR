@@ -4,8 +4,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Set;
 
 public class ThreadOTTReceiverUDP extends Thread {
     private DatagramSocket ds;
@@ -13,40 +12,33 @@ public class ThreadOTTReceiverUDP extends Thread {
     private String ipAdress;
     private Rota rotaFluxo;
     private RTPpacketQueue rtpQueue;
+    private Set<String> destinosQueremVerStream;
+    private boolean querVerStream;
 
-    public ThreadOTTReceiverUDP(DatagramSocket ds, PacketQueue pq, String ipAdress, Rota rotaFluxo, RTPpacketQueue rtpQueue) {
+    public ThreadOTTReceiverUDP(DatagramSocket ds, PacketQueue pq, String ipAdress, Rota rotaFluxo, RTPpacketQueue rtpQueue, Set<String> destinosQueremVerStream, boolean querVerStream) {
         this.ds = ds;
         this.pq = pq;
         this.ipAdress = ipAdress;
         this.rotaFluxo = rotaFluxo;
         this.rtpQueue = rtpQueue;
+        this.destinosQueremVerStream = destinosQueremVerStream;
+        this.querVerStream = querVerStream;
     }
 
     public void recebePacketVideo (RTPpacket rtp_packet) throws UnknownHostException {
 
-        String destination = rtp_packet.getDestinationIP();
-
-        if (destination.equals(ipAdress)) {
+        if (this.querVerStream) {
             rtpQueue.add(rtp_packet);
         }
-        else {
-            InetAddress clientIPAddr = null;
-            if (rotaFluxo.getDestinosVizinhos().containsKey(destination)) {
-                clientIPAddr = InetAddress.getByName(destination);
-            } else {
-                for (String ipAdress : rotaFluxo.getDestinosVizinhos().keySet()) {
-                    if (rotaFluxo.getDestinosVizinhos().get(ipAdress).contains(destination)) {
-                        clientIPAddr = InetAddress.getByName(ipAdress);
-                        break;
-                    }
-                }
-            }
 
-            int packet_length = rtp_packet.getlength();
-            // Retrieve the packet bitstream and store it in an array of bytes
-            byte[] packet_bits = new byte[packet_length];
-            rtp_packet.getpacket(packet_bits);
-            // Add the packet to the Packet Queue
+        int packet_length = rtp_packet.getlength();
+        // Retrieve the packet bitstream and store it in an array of bytes
+        byte[] packet_bits = new byte[packet_length];
+        rtp_packet.getpacket(packet_bits);
+
+        for (String destino : this.destinosQueremVerStream) {
+            InetAddress clientIPAddr = InetAddress.getByName(destino);
+
             DatagramPacket dp = new DatagramPacket(packet_bits, packet_length, clientIPAddr, 8888);
             pq.add(dp);
         }

@@ -37,8 +37,6 @@ public class Servidor extends JFrame implements ActionListener {
     int imagenb = 0; //image number of the image currently transmitted
     VideoStream video; //VideoStream object used to access video frames
     static int MJPEG_TYPE = 26; //RTP payload type for MJPEG video
-    //static int FRAME_PERIOD = 100; //Frame period of the video to stream, in ms
-    //static int VIDEO_LENGTH = 500; //length of the video in frames
     static int FRAME_PERIOD = 34; //Frame period of the video to stream, in ms
     static int VIDEO_LENGTH = 500; //length of the video in frames
 
@@ -138,7 +136,7 @@ public class Servidor extends JFrame implements ActionListener {
                 System.exit(0);
             }
         } else {
-            RTPpacket rtp_packet = new RTPpacket(27, imagenb, imagenb * FRAME_PERIOD, null, 0, DestinationIPAddr);
+            RTPpacket rtp_packet = new RTPpacket(27, imagenb, imagenb * FRAME_PERIOD, new byte[0], 0, DestinationIPAddr);
 
             int packet_length = rtp_packet.getlength();
 
