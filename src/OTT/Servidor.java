@@ -135,7 +135,11 @@ public class Servidor extends JFrame implements ActionListener {
 
                 imagenb = 0;
                 //if we have reached the end of the video file, stop the timer
-                //sTimer.stop();
+                sTimer.stop();
+
+                sTimer = new Timer(FRAME_PERIOD, this); //init Timer para servidor
+                sTimer.setInitialDelay(0);
+                sTimer.setCoalesce(true);
             }
         } catch(Exception ex) {
             System.out.println("Exception caught: "+ex);
