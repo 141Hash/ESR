@@ -16,7 +16,7 @@ public class Bootstrapper {
     public static HashMap <String, Set<String>> readJSonFile () throws Exception {
 
         HashMap <String, Set<String>> topologiaRede = new HashMap<>();
-        JSONArray jo = (JSONArray) new JSONParser().parse(new FileReader("NetworkFiles/rede2.json"));
+        JSONArray jo = (JSONArray) new JSONParser().parse(new FileReader("../NetworkFiles/rede2.json"));
 
         for (Object nodo : jo) {
             JSONObject nodoAtual = (JSONObject) nodo;
@@ -109,7 +109,7 @@ public class Bootstrapper {
 
     private static void iniciaServidorStreaming(DatagramSocket ds, PacketQueue pq, Rota rotaFluxo) {
 
-        String videoFileName = "MovieFiles/movie.Mjpeg";
+        String videoFileName = "../MovieFiles/movie.Mjpeg";
         /*
         if (!mensagemControlo[1].equals("")) {
             videoFileName = mensagemControlo[1];
