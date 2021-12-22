@@ -10,6 +10,7 @@ import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
 import javax.swing.*;
 import javax.swing.Timer;
 
@@ -27,6 +28,7 @@ public class Servidor extends JFrame implements ActionListener {
     DatagramSocket RTPsocket; //socket to be used to send and receive UDP packet
     PacketQueue queue;
     Rota rotafluxo;
+    Set<String> destinosQueremVerStream;
 
     int RTP_dest_port = 8888; //destination port for RTP packets
 
@@ -48,7 +50,7 @@ public class Servidor extends JFrame implements ActionListener {
     //--------------------------
     //Constructor
     //--------------------------
-    public Servidor(DatagramSocket ds, PacketQueue pq, Rota rotaFluxo, String videoFileName) {
+    public Servidor(DatagramSocket ds, PacketQueue pq, Rota rotaFluxo, String videoFileName, Set<String> destinoQueremVerStream) {
         //init Frame
         super("Servidor");
 
@@ -62,6 +64,8 @@ public class Servidor extends JFrame implements ActionListener {
             RTPsocket      = ds; // RTP socket
             queue          = pq; // PacketQueue
             this.rotafluxo = rotaFluxo;
+
+            this.destinosQueremVerStream = destinoQueremVerStream;
 
             VideoFileName = videoFileName; // Video name
             video         = new VideoStream(VideoFileName); //init the VideoStream object:
@@ -119,8 +123,10 @@ public class Servidor extends JFrame implements ActionListener {
 
                     //send the packet as a DatagramPacket over the UDP socket
                     for (String vizinho : this.rotafluxo.getDestinosVizinhos().keySet()) {
-                        senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(vizinho), RTP_dest_port);
-                        queue.add(senddp);
+                        if (destinosQueremVerStream.contains(vizinho)) {
+                            senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(vizinho), RTP_dest_port);
+                            queue.add(senddp);
+                        }
                     }
 
                     System.out.println("Send frame #"+imagenb);

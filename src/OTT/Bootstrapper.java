@@ -107,7 +107,7 @@ public class Bootstrapper {
 
     }
 
-    private static void iniciaServidorStreaming(DatagramSocket ds, PacketQueue pq, Rota rotaFluxo) {
+    private static void iniciaServidorStreaming(DatagramSocket ds, PacketQueue pq, Rota rotaFluxo, Set<String> destinosQueremVerStream) {
 
         String videoFileName = "../MovieFiles/movie.Mjpeg";
 
@@ -115,7 +115,7 @@ public class Bootstrapper {
 
         if (f.exists()) {
             //Create a Main object
-            Servidor s = new Servidor(ds, pq, rotaFluxo, videoFileName);
+            Servidor s = new Servidor(ds, pq, rotaFluxo, videoFileName, destinosQueremVerStream);
 
             //show GUI: (opcional!)
             s.pack();
@@ -135,7 +135,7 @@ public class Bootstrapper {
         Rota rotaFluxo = new Rota();
 
         Set<String> destinosQueremVerStream = new TreeSet<String>();
-        iniciaServidorStreaming(RTPsocket, queue, rotaFluxo);
+        iniciaServidorStreaming(RTPsocket, queue, rotaFluxo, destinosQueremVerStream);
 
         HashMap <String, Set<String>> topologiaRede = readJSonFile();
         Topologia topologia  = new Topologia(topologiaRede);
