@@ -141,6 +141,8 @@ public class Servidor extends JFrame implements ActionListener {
                 sTimer.setInitialDelay(0);
                 sTimer.setCoalesce(true);
 
+                video = new VideoStream(VideoFileName);
+
                 sTimer.start();
             }
         } catch(Exception ex) {
