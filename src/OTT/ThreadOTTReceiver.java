@@ -128,8 +128,9 @@ public class ThreadOTTReceiver extends Thread{
         if (this.destinosQueremVerStream.contains(ipDestino)) {
             this.destinosQueremVerStream.remove(ipDestino);
         }
-        if (this.destinosQueremVerStream.size() == 0 && !OTT.querVerStream) {
-            this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend(mensagemControlo[0] + "#" + this.ipOTT + "\n");
+        if (this.destinosQueremVerStream.size() == 0 && !this.isBootstrapper) {
+            if (!OTT.querVerStream)
+                this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend(mensagemControlo[0] + "#" + this.ipOTT + "\n");
         }
     }
 

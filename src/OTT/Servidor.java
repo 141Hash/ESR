@@ -107,34 +107,32 @@ public class Servidor extends JFrame implements ActionListener {
                 //update current imagenb
                 imagenb++;
 
+                //get next frame to send from the video, as well as its size
+                int image_length = video.getnextframe(sBuf);
 
-                    //get next frame to send from the video, as well as its size
-                    int image_length = video.getnextframe(sBuf);
+                //Builds an RTPpacket object containing the frame
+                RTPpacket rtp_packet = new RTPpacket(MJPEG_TYPE, imagenb, imagenb*FRAME_PERIOD, sBuf, image_length);
 
-                    //Builds an RTPpacket object containing the frame
-                    RTPpacket rtp_packet = new RTPpacket(MJPEG_TYPE, imagenb, imagenb*FRAME_PERIOD, sBuf, image_length);
+                //get to total length of the full rtp packet to send
+                int packet_length = rtp_packet.getlength();
 
-                    //get to total length of the full rtp packet to send
-                    int packet_length = rtp_packet.getlength();
+                //retrieve the packet bitstream and store it in an array of bytes
+                byte[] packet_bits = new byte[packet_length];
+                rtp_packet.getpacket(packet_bits);
 
-                    //retrieve the packet bitstream and store it in an array of bytes
-                    byte[] packet_bits = new byte[packet_length];
-                    rtp_packet.getpacket(packet_bits);
+                //send the packet as a DatagramPacket over the UDP socket
 
-                    //send the packet as a DatagramPacket over the UDP socket
-                    for (String vizinho : this.rotafluxo.getDestinosVizinhos().keySet()) {
-                        if (destinosQueremVerStream.contains(vizinho)) {
-                            senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(vizinho), RTP_dest_port);
-                            queue.add(senddp);
-                        }
-                    }
+                for (String vizinho : this.destinosQueremVerStream) {
+                    senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(vizinho), RTP_dest_port);
+                    queue.add(senddp);
+                }
 
-                    System.out.println("Send frame #"+imagenb);
-                    //print the header bitstream
-                    rtp_packet.printheader();
+                System.out.println("Send frame #"+imagenb);
+                //print the header bitstream
+                rtp_packet.printheader();
 
-                    //update GUI
-                    label.setText("Send frame #" + imagenb);
+                //update GUI
+                label.setText("Send frame #" + imagenb);
 
 
             } else {
