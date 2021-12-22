@@ -189,7 +189,7 @@ public class Cliente {
         public void actionPerformed(ActionEvent e) {
 
             try {
-                while (querVerStream) {
+                if (querVerStream) {
                     //create an RTPpacket object from the DP
                     RTPpacket rtp_packet = rtPpacketQueue.remove();
 
