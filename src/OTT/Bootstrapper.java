@@ -77,7 +77,7 @@ public class Bootstrapper {
         rotaFluxo.addDestinoVizinho(dadosConnection[1]);
         vizinhos.put(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
 
-        ThreadOTTReceiver receiver         = new ThreadOTTReceiver(true, ipAdress, dis, socket, vizinhos, rotaFluxo, ds, pq);
+        ThreadOTTReceiver receiver         = new ThreadOTTReceiver(true, ipAdress, dis, socket, vizinhos, rotaFluxo, ds, pq, null);
         ThreadOTTSender sender             = new ThreadOTTSender(socket, dos, vizinhos.get(dadosConnection[1]).getMessagesToSend());
         ThreadSendControlMessage controler = new ThreadSendControlMessage(dos);
 
