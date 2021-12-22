@@ -62,7 +62,7 @@ public class OTT {
 		Rota rotaFluxo = new Rota();
 
 		Set<String> destinosQueremVerStream = new TreeSet<String>();
-		boolean querVerStream = false;
+		boolean querVerStream = true;
 
 		DatagramSocket RTPsocket = new DatagramSocket(8888);
 		PacketQueue queue        = new PacketQueue();
