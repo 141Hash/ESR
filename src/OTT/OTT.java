@@ -101,6 +101,11 @@ public class OTT {
 		receiverUDP.start();
 		senderUDP.start();
 
+		BeaconReceiver receiverBeacon = new BeaconReceiver(vizinhos);
+		BeaconSender senderBeacon = new BeaconSender(queue, ipAdress, vizinhos);
+		receiverBeacon.start();
+		senderBeacon.start();
+
 
 		// Tenta ligar a outros OTTs
 		for (String vizinho : vizinhos.keySet()) {

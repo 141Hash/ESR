@@ -131,9 +131,12 @@ public class Bootstrapper {
 
         DatagramSocket RTPsocket = new DatagramSocket(8888);
         PacketQueue queue        = new PacketQueue();
+        RTPpacketQueue rtpQueue  = new RTPpacketQueue();
 
         Map<String, DadosVizinho> vizinhos = new HashMap<>();
         Rota rotaFluxo = new Rota();
+
+        String ipAdress = InetAddress.getLocalHost().getHostAddress();
 
         Set<String> destinosQueremVerStream = new TreeSet<String>();
         iniciaServidorStreaming(RTPsocket, queue, rotaFluxo, destinosQueremVerStream);
@@ -141,10 +144,17 @@ public class Bootstrapper {
         HashMap <String, Set<String>> topologiaRede = readJSonFile();
         Topologia topologia  = new Topologia(topologiaRede);
 
+        ThreadOTTReceiverUDP receiverUDP   = new ThreadOTTReceiverUDP(RTPsocket, queue, ipAdress, rotaFluxo, rtpQueue, destinosQueremVerStream);
         ThreadOTTSenderUDP senderUDP = new ThreadOTTSenderUDP(RTPsocket, queue);
+        receiverUDP.start();
         senderUDP.start();
 
-        String ipAdress = InetAddress.getLocalHost().getHostAddress();
+
+        BeaconReceiver receiverBeacon = new BeaconReceiver(vizinhos);
+        BeaconSender senderBeacon = new BeaconSender(queue, ipAdress, vizinhos);
+        receiverBeacon.start();
+        senderBeacon.start();
+
         ServerSocket ss = new ServerSocket(Integer.parseInt("8080"));
 
         while(true) {
