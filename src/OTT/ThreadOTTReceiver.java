@@ -120,8 +120,10 @@ public class ThreadOTTReceiver extends Thread {
 
         if (dadosNodo.getOrigemFluxo() != null) {
             dadosNodo.getVizinho(dadosNodo.getOrigemFluxo()).addMessagesToSend(mensagemControlo[0] + "#" + mensagemControlo[1]  + "-" + this.ipOTT + "\n");
-        } else {
-            System.out.println("Não é destino de nenhum nodo no momento");
+        }
+        else {
+            if (!this.isBootstrapper)
+                System.out.println("Não é destino de nenhum nodo no momento");
         }
     }
 
@@ -184,7 +186,8 @@ public class ThreadOTTReceiver extends Thread {
                     }
                     else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("PauseVideo")) {
                         enviaPedidoParaPausarStream(mensagemControlo);
-                    } else {
+                    }
+                    else {
                         System.out.println("I don't know what to do");
                     }
 

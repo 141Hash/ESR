@@ -152,7 +152,7 @@ public class Bootstrapper {
         senderUDP.start();
 
 
-        BeaconReceiver receiverBeacon = new BeaconReceiver(dadosNodo, ipAdress, true);
+        BeaconReceiver receiverBeacon = new BeaconReceiver(dadosNodo, ipAdress, true, rtpQueue);
         BeaconSender senderBeacon = new BeaconSender(queue, ipAdress, dadosNodo);
         receiverBeacon.start();
         senderBeacon.start();

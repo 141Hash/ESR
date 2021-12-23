@@ -16,14 +16,13 @@
 
 ✔ Alterar de maneira a que seja feita uma stream e não a replicação de um vídeo
 
+✔ Mandar mensagem ao Servidor para parar de mandar vídeo
+
+✔ Beacons
+
+✔ Existe um erro que ele fica sempre a mandar as cenas para o primeiro OTT (mesmo depois de pausar o vídeo)
+
 ############################## TO DO ##############################
-
-
-❌ Mandar mensagem ao Servidor para parar de mandar vídeo
-
-❌ Beacons
-
 
 Enviar ping da rota sempre que ligamos um novo Nodo. Ativar condition com um signal -> Meter também uma thread que lhe manda um signal de determinado em determinado tempo
 
-Existe um erro que ele fica sempre a mandar as cenas para o primeiro OTT (mesmo depois de pausar o vídeo)
