@@ -109,7 +109,7 @@ public class Bootstrapper {
 
     private static void iniciaServidorStreaming(DatagramSocket ds, PacketQueue pq, Rota rotaFluxo, Set<String> destinosQueremVerStream) {
 
-        String videoFileName = "../MovieFiles/movie.Mjpeg";
+        String videoFileName = "../MovieFiles/movie2.Mjpeg";
 
         File f = new File(videoFileName);
 

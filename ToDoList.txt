@@ -35,3 +35,4 @@ While true e depois while 0
 
 
 Enviar ping da rota sempre que ligamos um novo Nodo. Ativar condition com um signal -> Meter também uma thread que lhe manda um signal de determinado em determinado tempo
+Existe um erro que ele fica sempre a mandar as cenas para o primeiro OTT (mesmo depois de pausar o vídeo)
