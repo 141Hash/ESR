@@ -13,6 +13,8 @@ import java.util.*;
 
 public class Bootstrapper {
 
+    public static Set<String> destinosVideoIniciais;
+
     public static HashMap <String, Set<String>> readJSonFile () throws Exception {
 
         HashMap <String, Set<String>> topologiaRede = new HashMap<>();
@@ -132,6 +134,8 @@ public class Bootstrapper {
         DatagramSocket RTPsocket = new DatagramSocket(8888);
         PacketQueue queue        = new PacketQueue();
         RTPpacketQueue rtpQueue  = new RTPpacketQueue();
+
+        Bootstrapper.destinosVideoIniciais = new TreeSet<>();
 
         Map<String, DadosVizinho> vizinhos  = new HashMap<>();
         Set<String> destinosQueremVerStream = new TreeSet<>();

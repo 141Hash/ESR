@@ -116,7 +116,11 @@ public class ThreadOTTReceiver extends Thread {
             }
         }
 
-        dadosNodo.getVizinho(dadosNodo.getOrigemFluxo()).addMessagesToSend(mensagemControlo[0] + "#" + mensagemControlo[1]  + "-" + this.ipOTT + "\n");
+        if (dadosNodo.getOrigemFluxo() != null) {
+            dadosNodo.getVizinho(dadosNodo.getOrigemFluxo()).addMessagesToSend(mensagemControlo[0] + "#" + mensagemControlo[1]  + "-" + this.ipOTT + "\n");
+        } else {
+            System.out.println("Não é destino de nenhum nodo no momento");
+        }
     }
 
     public void enviaPedidoParaPausarStream (String[] mensagemControlo) {
