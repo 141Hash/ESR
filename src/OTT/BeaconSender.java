@@ -37,9 +37,10 @@ public class BeaconSender extends Thread {
                 for (String vizinho : this.vizinhos.keySet()) {
                     DatagramPacket dp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(vizinho), 8888);
                     packetQueue.add(dp);
+                    System.out.println("Beacon enviado para " + vizinho);
                 }
 
-                System.out.println("Beacon enviado\n");
+                System.out.println("Beacon enviado");
 
                 Thread.sleep(SLEEP_TIME);
 
