@@ -19,11 +19,11 @@ public class ThreadOTTSender extends Thread{
     }
 
     public void run () {
-        while (!OTT.EXIT || !messagesToSend.isEmpty()) {
+        while (!OTT.EXIT) {
 			try {
 				String message = messagesToSend.remove();
 
-				if(!OTT.EXIT) {
+				if (!OTT.EXIT) {
                     byte[] data = message.getBytes();
                     dos.write(data);
                     dos.flush();
