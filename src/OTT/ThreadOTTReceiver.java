@@ -40,6 +40,7 @@ public class ThreadOTTReceiver extends Thread {
                         dadosNodo.getRotaFluxo().addDestinoVizinho(vizinho);
                     }
                 }
+                System.out.println(dadosNodo.getRotaFluxo().toString());
             }
 
             else if (!ipOrigem.equals(dadosNodo.getOrigemFluxo())) {
@@ -51,7 +52,6 @@ public class ThreadOTTReceiver extends Thread {
 
             dadosNodo.getRotaFluxo().removeDestino(dadosNodo.getOrigemFluxo());
 
-            System.out.println(dadosNodo.getRotaFluxo().toString());
             nrSaltos++;
 
             int counterFowards = 0;
@@ -185,7 +185,6 @@ public class ThreadOTTReceiver extends Thread {
                     } else {
                         System.out.println("I don't know what to do");
                     }
-                    System.out.println(line);
 
                 }
 
