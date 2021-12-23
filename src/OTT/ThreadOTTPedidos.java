@@ -42,16 +42,18 @@ public class ThreadOTTPedidos extends Thread {
             }
 
             for (String vizinho: this.vizinhos.keySet()) {
-                this.vizinhos.get(vizinho).getMessagesToSend().addFirst("Leaving#" + InetAddress.getLocalHost().getHostAddress() + "\n");
+                if (this.vizinhos.get(vizinho) != null)
+                    this.vizinhos.get(vizinho).getMessagesToSend().addFirst("Leaving#" + InetAddress.getLocalHost().getHostAddress() + "\n");
             }
-            for (String vizinho: this.vizinhos.keySet()) {
-                this.vizinhos.get(vizinho).getMessagesToSend().signalCon();
-            }
-
-            Thread.sleep(1000);
 
             OTT.EXIT = true;
+            Thread.sleep(1000);
 
+            for (String vizinho: this.vizinhos.keySet()) {
+                if (this.vizinhos.get(vizinho) != null)
+                    this.vizinhos.get(vizinho).getMessagesToSend().signalCon();
+            }
+            
             System.exit(0);
 
         }
