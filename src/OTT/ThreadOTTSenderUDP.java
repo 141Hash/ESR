@@ -16,8 +16,9 @@ public class ThreadOTTSenderUDP extends Thread {
         while (true) {
             try {
                 DatagramPacket p = pq.remove();
+                p.getAddress().getHostAddress();
                 ds.send(p);
-                System.out.println("Beacon enviado -> Pacote enviado");
+                System.out.println("Beacon enviado para " + p.getAddress().getHostAddress()  + "-> Pacote enviado");
             } catch (Exception ignored) {}
         }
     }

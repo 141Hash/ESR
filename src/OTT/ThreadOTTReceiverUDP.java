@@ -70,10 +70,8 @@ public class ThreadOTTReceiverUDP extends Thread {
                     recebePacketVideo(rtp_packet);
                 } else if (rtp_packet.getpayloadtype() == 1) {
                     atualizaValorBeacon(rtp_packet);
-                    System.out.println("Recebi um beacon");
+                    System.out.println("Recebi Beaocn");
                 }
-
-                System.out.println("Recebi pacote");
 
 
             } catch (Exception ignored) {}
