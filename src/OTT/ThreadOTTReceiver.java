@@ -151,6 +151,7 @@ public class ThreadOTTReceiver extends Thread{
                 line = dis.readLine();
 
                 String[] mensagemControlo = line.split("#");
+
    		        if (mensagemControlo.length > 2 && mensagemControlo[0].equals("RouteControl")) {
    		            adicionaMensagemControloVizinhos(mensagemControlo);
                 }
@@ -168,12 +169,15 @@ public class ThreadOTTReceiver extends Thread{
                 }
                 else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("PauseVideo")) {
                     enviaPedidoParaPausarStream(mensagemControlo);
+                } else {
+
                 }
    		        System.out.println(line);
 
 		    }
-	    } catch(IOException e){
+	    } catch (IOException e){
         	System.out.println(e.getMessage());
+        	e.printStackTrace();
         }
     }
 
