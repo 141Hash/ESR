@@ -51,6 +51,7 @@ public class ThreadOTTReceiverUDP extends Thread {
         rtp_packet.getpayload(payload);
 
         String ipVizinho = new String(payload, StandardCharsets.UTF_8);
+        System.out.println("Beacon recebido de " + ipVizinho);
 
         if (this.vizinhos.get(ipVizinho) != null)
             this.vizinhos.get(ipVizinho).updateTime();
@@ -65,15 +66,15 @@ public class ThreadOTTReceiverUDP extends Thread {
                 ds.receive(dp);
 
                 RTPpacket rtp_packet = new RTPpacket(dp.getData(), dp.getLength());
-                System.out.println("Tipo do pacote recebido = " + rtp_packet.getpayloadtype());
 
-                if (rtp_packet.getpayloadtype() == 26) {
-                    recebePacketVideo(rtp_packet);
-                } else if (rtp_packet.getpayloadtype() == 1) {
-                    atualizaValorBeacon(rtp_packet);
-                    System.out.println("Recebi Beaocn");
+                int payloadType = rtp_packet.getpayloadtype();
+
+                switch (payloadType) {
+                    case 26:
+                        recebePacketVideo(rtp_packet);
+                    case 1:
+                        atualizaValorBeacon(rtp_packet);
                 }
-
 
             } catch (Exception ignored) {}
         }
