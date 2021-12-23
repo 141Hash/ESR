@@ -210,6 +210,7 @@ public class Cliente {
 
                     if (rtp_packet == null) {
                         OTT.querVerStream = false;
+
                         cTimer.stop();
                     }
                     else if (rtp_packet.getpayloadtype() == 26) {

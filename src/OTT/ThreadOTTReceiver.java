@@ -155,6 +155,7 @@ public class ThreadOTTReceiver extends Thread {
         }
 
         rtPpacketQueue.signalCon();
+
         dadosNodo.removeVizinho(mensagemControlo[1]);
     }
 
@@ -183,6 +184,7 @@ public class ThreadOTTReceiver extends Thread {
                     }
                     else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("GetVideo")) {
                         enviaPedidoParaVerStream(mensagemControlo);
+                        System.out.println("GetVideo");
                     }
                     else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("PauseVideo")) {
                         enviaPedidoParaPausarStream(mensagemControlo);
@@ -190,6 +192,8 @@ public class ThreadOTTReceiver extends Thread {
                     else {
                         System.out.println("I don't know what to do");
                     }
+
+                    System.out.println(dadosNodo.getRotaFluxo().toString());
 
                 }
 
