@@ -193,4 +193,15 @@ public class DadosNodo {
         }
     }
 
+    public void addMessagesToAll(String message) {
+        lockVizinhos.lock();
+        try {
+            for (DadosVizinho dadosVizinho : this.vizinhos.values()) {
+                dadosVizinho.addMessagesToSend(message);
+            }
+        } finally {
+            lockVizinhos.unlock();
+        }
+    }
+
 }

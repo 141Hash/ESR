@@ -172,6 +172,9 @@ public class Bootstrapper {
             } else {
                 estabeleConnectioInicial(topologia, dos, dis, socket, line);
             }
+
+            Thread.sleep(500);
+            dadosNodo.addMessagesToAll("RouteControl#1#" + ipAdress + "\n");
         }
 
     }
