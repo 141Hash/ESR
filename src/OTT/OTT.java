@@ -101,7 +101,7 @@ public class OTT {
 		receiverUDP.start();
 		senderUDP.start();
 
-		BeaconReceiver receiverBeacon = new BeaconReceiver(vizinhos);
+		BeaconReceiver receiverBeacon = new BeaconReceiver(vizinhos, rotaFluxo, destinosQueremVerStream, ipAdress, false);
 		BeaconSender senderBeacon = new BeaconSender(queue, ipAdress, vizinhos);
 		receiverBeacon.start();
 		senderBeacon.start();
