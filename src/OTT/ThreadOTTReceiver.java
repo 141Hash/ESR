@@ -137,10 +137,20 @@ public class ThreadOTTReceiver extends Thread {
         if (mensagemControlo[1].equals(this.rotaFluxo.getOrigem())) {
             this.rotaFluxo = new Rota();
         }
+
         else if (this.rotaFluxo.getDestinosVizinhos().containsKey(mensagemControlo[1])) {
             this.rotaFluxo.removeDestino(mensagemControlo[1]);
+
+            this.destinosQueremVerStream.remove(mensagemControlo[1]);
+            if (this.destinosQueremVerStream.size() == 0 && !this.isBootstrapper) {
+                if (!OTT.querVerStream)
+                    this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("PauseVideo#" + this.ipOTT + "\n");
+            }
+
         }
+
         this.vizinhos.remove(mensagemControlo[1]);
+
     }
 
 

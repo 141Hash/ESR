@@ -187,8 +187,13 @@ public class Cliente {
                         this.vizinhos.get(vizinho).getMessagesToSend().addFirst("Leaving#" + InetAddress.getLocalHost().getHostAddress() + "\n");
                 }
 
-                OTT.EXIT = true;
                 Thread.sleep(1000);
+                OTT.EXIT = true;
+
+                for (String vizinho: this.vizinhos.keySet()) {
+                    if (this.vizinhos.get(vizinho) != null)
+                        this.vizinhos.get(vizinho).getMessagesToSend().signalCon();
+                }
 
                 cTimer.stop();
                 Runtime.getRuntime().halt(0);
