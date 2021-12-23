@@ -28,7 +28,7 @@ public class BeaconSender extends Thread {
             try {
 
                 byte[] data  = ipAdress.getBytes(StandardCharsets.UTF_8);
-                RTPpacket rtp_packet = new RTPpacket(1, 0, 0, data, data.length);
+                RTPpacket rtp_packet = new RTPpacket(11, 0, 0, data, data.length);
 
                 int packet_length = rtp_packet.getlength();
                 byte[] packet_bits = new byte[packet_length];
