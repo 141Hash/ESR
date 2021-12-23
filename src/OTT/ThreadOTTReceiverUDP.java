@@ -4,6 +4,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.Set;
 
 public class ThreadOTTReceiverUDP extends Thread {
@@ -13,6 +15,7 @@ public class ThreadOTTReceiverUDP extends Thread {
     private Rota rotaFluxo;
     private RTPpacketQueue rtpQueue;
     private Set<String> destinosQueremVerStream;
+    private Map<String, DadosVizinho> vizinhos;
 
     public ThreadOTTReceiverUDP(DatagramSocket ds, PacketQueue pq, String ipAdress, Rota rotaFluxo, RTPpacketQueue rtpQueue, Set<String> destinosQueremVerStream) {
         this.ds = ds;
@@ -43,6 +46,16 @@ public class ThreadOTTReceiverUDP extends Thread {
 
     }
 
+    private void atualizaValorBeacon(RTPpacket rtp_packet) {
+        byte[] payload = new byte[rtp_packet.getpayload_length()];
+        rtp_packet.getpayload(payload);
+
+        String ipVizinho = new String(payload, StandardCharsets.UTF_8);
+
+        if (this.vizinhos.get(ipVizinho) != null)
+            this.vizinhos.get(ipVizinho).updateTime();
+    }
+
     public void run() {
         while (true) {
             try {
@@ -56,7 +69,8 @@ public class ThreadOTTReceiverUDP extends Thread {
                 if (rtp_packet.getpayloadtype() == 26) {
                     recebePacketVideo(rtp_packet);
                 } else if (rtp_packet.getpayloadtype() == 1) {
-                    // Podemos colocar aqui os KeepAlive por exemplo (Beacons)
+                    atualizaValorBeacon(rtp_packet);
+                    System.out.println("Recebi um beacon");
                 }
 
                 System.out.println("Recebi pacote");
@@ -65,4 +79,6 @@ public class ThreadOTTReceiverUDP extends Thread {
             } catch (Exception ignored) {}
         }
     }
+
+
 }
