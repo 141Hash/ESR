@@ -196,7 +196,7 @@ public class Cliente {
                 }
 
                 cTimer.stop();
-                System.exit(0);
+                Runtime.getRuntime().halt(0);
 
             } catch (InterruptedException | UnknownHostException ignored) { }
         }
