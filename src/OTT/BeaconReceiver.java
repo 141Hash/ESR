@@ -16,10 +16,12 @@ public class BeaconReceiver extends Thread {
     }
 
     private void removeIdle() {
+        System.out.println("Investigar od IDLE");
         ArrayList<String> vizinhosToRemove = new ArrayList<>();
 
         for (String vizinho : this.vizinhos.keySet()) {
             if (this.vizinhos.get(vizinho) != null)
+                System.out.println(this.vizinhos.get(vizinho).getLastUpdate().until(LocalTime.now(ZoneId.of("UTC")), ChronoUnit.SECONDS) + " segundos passados de " + vizinho);
                 if (this.vizinhos.get(vizinho).getLastUpdate().until(LocalTime.now(ZoneId.of("UTC")), ChronoUnit.SECONDS) > (BeaconReceiver.SLEEP_TIME / 1000))
                     vizinhosToRemove.add(vizinho);
         }
