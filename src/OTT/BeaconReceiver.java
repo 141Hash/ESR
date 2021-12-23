@@ -21,7 +21,10 @@ public class BeaconReceiver extends Thread {
             try {
                 Thread.sleep(SLEEP_TIME);
                 if (dadosNodo.removeIdle(isBootstrapper, ipAdress))
-                    rtPpacketQueue.signalCon();
+                    if (dadosNodo.getOrigemFluxo() == null) {
+                        Thread.sleep(500);
+                        rtPpacketQueue.signalCon();
+                    }
             } catch (InterruptedException ignored) { }
         }
     }

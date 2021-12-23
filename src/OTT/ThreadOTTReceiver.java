@@ -154,9 +154,15 @@ public class ThreadOTTReceiver extends Thread {
 
         }
 
-        rtPpacketQueue.signalCon();
-
         dadosNodo.removeVizinho(mensagemControlo[1]);
+
+        try {
+            Thread.sleep(500);
+            rtPpacketQueue.signalCon();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
 
