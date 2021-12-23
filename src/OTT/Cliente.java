@@ -34,9 +34,7 @@ public class Cliente {
     DatagramSocket RTPsocket; //socket to be used to send and receive UDP packet
     RTPpacketQueue rtPpacketQueue;
 
-    Rota rotaFluxo;
-    Map<String, DadosVizinho> vizinhos;
-    Set<String> destinosQueremVerStream;
+    DadosNodo dadosNodo;
 
     Timer cTimer; //timer used to receive data from the UDP socket
     byte[] cBuf; //buffer used to store data received from the server
@@ -45,7 +43,7 @@ public class Cliente {
     //Constructor
     //--------------------------
 
-    public Cliente(DatagramSocket ds, RTPpacketQueue rtpQueue, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo, Set<String> destinosQueremVerStream) {
+    public Cliente(DatagramSocket ds, RTPpacketQueue rtpQueue, DadosNodo dadosNodo) {
         //build GUI
         //--------------------------
 
@@ -66,9 +64,9 @@ public class Cliente {
         buttonPanel.add(tearButton);
 
         // handlers... (so dois)
-        playButton.addActionListener(new playButtonListener(rotaFluxo, vizinhos));
-        pauseButton.addActionListener(new pauseButtonListener(rotaFluxo, vizinhos, destinosQueremVerStream));
-        tearButton.addActionListener(new tearButtonListener(vizinhos));
+        playButton.addActionListener(new playButtonListener(dadosNodo));
+        pauseButton.addActionListener(new pauseButtonListener(dadosNodo));
+        tearButton.addActionListener(new tearButtonListener(dadosNodo));
 
         //Image display label
         iconLabel.setIcon(null);
@@ -93,9 +91,7 @@ public class Cliente {
 
         try {
             // socket e video
-            this.vizinhos = vizinhos;
-            this.rotaFluxo = rotaFluxo;
-            this.destinosQueremVerStream = destinosQueremVerStream;
+            this.dadosNodo = dadosNodo;
             rtPpacketQueue = rtpQueue;
             RTPsocket = ds; //init RTP socket (o mesmo para o cliente e servidor)
             RTPsocket.setSoTimeout(5000); // setimeout to 5s
@@ -112,18 +108,16 @@ public class Cliente {
     //-----------------------
     class playButtonListener implements ActionListener {
 
-        Rota rotaFluxo;
-        Map<String, DadosVizinho> vizinhos;
+        DadosNodo dadosNodo;
 
-        public playButtonListener(Rota rotaFluxo, Map<String, DadosVizinho> vizinhos) {
-            this.rotaFluxo = rotaFluxo;
-            this.vizinhos = vizinhos;
+        public playButtonListener (DadosNodo dadosNodo) {
+            this.dadosNodo = dadosNodo;
         }
 
         public void actionPerformed(ActionEvent e){
             try {
-                if (rotaFluxo.getOrigem() != null) {
-                    this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("GetVideo#" + InetAddress.getLocalHost().getHostAddress() + "\n");
+                if (dadosNodo.getOrigemFluxo() != null) {
+                    this.dadosNodo.getVizinho(this.dadosNodo.getOrigemFluxo()).addMessagesToSend("GetVideo#" + InetAddress.getLocalHost().getHostAddress() + "\n");
                     OTT.querVerStream = true;
 
                     System.out.println("Play Button pressed !");
@@ -143,14 +137,10 @@ public class Cliente {
     //-----------------------
     class pauseButtonListener implements ActionListener {
 
-        Rota rotaFluxo;
-        Map<String, DadosVizinho> vizinhos;
-        Set<String> destinosQueremVerStream;
+        DadosNodo dadosNodo;
 
-        public pauseButtonListener(Rota rotaFluxo, Map<String, DadosVizinho> vizinhos, Set<String> destinosQueremVerStream) {
-            this.rotaFluxo = rotaFluxo;
-            this.vizinhos = vizinhos;
-            this.destinosQueremVerStream = destinosQueremVerStream;
+        public pauseButtonListener (DadosNodo dadosNodo) {
+            this.dadosNodo = dadosNodo;
         }
 
         public void actionPerformed(ActionEvent e){
@@ -158,8 +148,8 @@ public class Cliente {
             OTT.querVerStream = false;
 
             try {
-                if (this.destinosQueremVerStream.size() == 0 && this.rotaFluxo.getOrigem() != null) {
-                    this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("PauseVideo#" + InetAddress.getLocalHost().getHostAddress() + "\n");
+                if (this.dadosNodo.getDestinosQueremVerStream().size() == 0 && this.dadosNodo.getOrigemFluxo() != null) {
+                    this.dadosNodo.getVizinho(this.dadosNodo.getOrigemFluxo()).addMessagesToSend("PauseVideo#" + InetAddress.getLocalHost().getHostAddress() + "\n");
 
                     System.out.println("Play Pause pressed !");
                     //start the timers ...
@@ -176,26 +166,26 @@ public class Cliente {
     //-----------------------
     class tearButtonListener implements ActionListener {
 
-        Map<String, DadosVizinho> vizinhos;
+        DadosNodo dadosNodo;
 
-        public tearButtonListener(Map<String, DadosVizinho> vizinhos) {
-            this.vizinhos = vizinhos;
+        public tearButtonListener(DadosNodo dadosNodo) {
+            this.dadosNodo = dadosNodo;
         }
 
         public void actionPerformed(ActionEvent e){
 
             try {
-                for (String vizinho: this.vizinhos.keySet()) {
-                    if (this.vizinhos.get(vizinho) != null)
-                        this.vizinhos.get(vizinho).getMessagesToSend().addFirst("Leaving#" + InetAddress.getLocalHost().getHostAddress() + "\n");
+                for (String vizinho: this.dadosNodo.getIpsVizinhos()) {
+                    if (this.dadosNodo.getVizinho(vizinho) != null)
+                        this.dadosNodo.getVizinho(vizinho).addMessagesToSend("Leaving#" + InetAddress.getLocalHost().getHostAddress() + "\n");
                 }
 
                 Thread.sleep(1000);
                 OTT.EXIT = true;
 
-                for (String vizinho: this.vizinhos.keySet()) {
-                    if (this.vizinhos.get(vizinho) != null)
-                        this.vizinhos.get(vizinho).getMessagesToSend().signalCon();
+                for (String vizinho: this.dadosNodo.getIpsVizinhos()) {
+                    if (this.dadosNodo.getVizinho(vizinho) != null)
+                        this.dadosNodo.getVizinho(vizinho).getMessagesToSend().signalCon();
                 }
 
                 cTimer.stop();

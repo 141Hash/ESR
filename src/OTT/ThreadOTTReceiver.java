@@ -14,23 +14,13 @@ public class ThreadOTTReceiver extends Thread {
     private boolean isBootstrapper;
     private String ipOTT;
     private BufferedReader dis;
-    private Socket s;
-    private Map<String, DadosVizinho> vizinhos;
-    private Rota rotaFluxo;
-    private DatagramSocket ds;
-    private PacketQueue pq;
-    private Set<String> destinosQueremVerStream;
+    private DadosNodo dadosNodo;
 
-    public ThreadOTTReceiver(boolean isBootstrapper, String ipOTT, BufferedReader dis, Socket s, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo, DatagramSocket ds, PacketQueue pq, Set<String> destinosQueremVerStream) {
+    public ThreadOTTReceiver(boolean isBootstrapper, String ipOTT, BufferedReader dis, DadosNodo dadosNodo) {
         this.isBootstrapper = isBootstrapper;
         this.ipOTT = ipOTT;
         this.dis = dis;
-        this.s = s;
-        this.vizinhos = vizinhos;
-        this.rotaFluxo = rotaFluxo;
-        this.ds = ds;
-        this.pq = pq;
-        this.destinosQueremVerStream = destinosQueremVerStream;
+        this.dadosNodo = dadosNodo;
     }
 
     public void adicionaMensagemControloVizinhos (String[] mensagemControlo) {
@@ -42,33 +32,33 @@ public class ThreadOTTReceiver extends Thread {
             String ipOrigem = historico.get(historico.size() - 1);
             int nrSaltos    = Integer. parseInt(mensagemControlo[1]);
 
-            if (rotaFluxo.getCusto() == -1 || rotaFluxo.getCusto() > nrSaltos) {
-                rotaFluxo.setCusto(nrSaltos);
-                rotaFluxo.setOrigem(ipOrigem);
-                for (String vizinho : this.vizinhos.keySet()) {
+            if (dadosNodo.getRotaFluxo().getCusto() == -1 || dadosNodo.getRotaFluxo().getCusto() > nrSaltos) {
+                dadosNodo.getRotaFluxo().setCusto(nrSaltos);
+                dadosNodo.getRotaFluxo().setOrigem(ipOrigem);
+                for (String vizinho : this.dadosNodo.getIpsVizinhos()) {
                     if (!vizinho.equals(ipOrigem)) {
-                        rotaFluxo.addDestinoVizinho(vizinho);
+                        dadosNodo.getRotaFluxo().addDestinoVizinho(vizinho);
                     }
                 }
             }
 
-            else if (!ipOrigem.equals(rotaFluxo.getOrigem())) {
+            else if (!ipOrigem.equals(dadosNodo.getOrigemFluxo())) {
                 String ipAdress = InetAddress.getLocalHost().getHostAddress();
 
                 String dontUseMeAsDestiny = "DontUseMeAsDestiny#" + ipAdress + "\n";
-                this.vizinhos.get(ipOrigem).addMessagesToSend(dontUseMeAsDestiny);
+                dadosNodo.getVizinho(ipOrigem).addMessagesToSend(dontUseMeAsDestiny);
             }
 
-            rotaFluxo.removeDestino(rotaFluxo.getOrigem());
+            dadosNodo.getRotaFluxo().removeDestino(dadosNodo.getOrigemFluxo());
 
-            System.out.println(rotaFluxo.toString());
+            System.out.println(dadosNodo.getRotaFluxo().toString());
             nrSaltos++;
 
             int counterFowards = 0;
-            for (String vizinho : this.vizinhos.keySet()) {
-                if (!historico.contains(vizinho) && this.vizinhos.get(vizinho) != null) {
+            for (String vizinho : dadosNodo.getIpsVizinhos()) {
+                if (!historico.contains(vizinho) && dadosNodo.getVizinho(vizinho) != null) {
                     String nextMessage = mensagemControlo[0] + "#" + nrSaltos + "#" + mensagemControlo[2] + "-" + ipOTT + "\n";
-                    this.vizinhos.get(vizinho).addMessagesToSend(nextMessage);
+                    dadosNodo.getVizinho(vizinho).addMessagesToSend(nextMessage);
                     counterFowards++;
                 }
             }
@@ -77,7 +67,7 @@ public class ThreadOTTReceiver extends Thread {
                 String ipAdress = InetAddress.getLocalHost().getHostAddress();
 
                 String totalDestinies = "TotalDestinies#" + ipAdress + "\n";
-                this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend(totalDestinies);
+                dadosNodo.getVizinho(dadosNodo.getOrigemFluxo()).addMessagesToSend(totalDestinies);
             }
 
         } catch (Exception ignored) { }
@@ -91,14 +81,14 @@ public class ThreadOTTReceiver extends Thread {
         if (nrDestinos > 1) {
             String destino = destinos.get(nrDestinos - 1);
             for (int i = 0; i < nrDestinos - 1; i++) {
-                this.rotaFluxo.addDestinoVizinhoToTotalDestinies(destino, destinos.get(i));
+                dadosNodo.getRotaFluxo().addDestinoVizinhoToTotalDestinies(destino, destinos.get(i));
             }
         }
 
-        if (this.rotaFluxo.getOrigem() != null) {
+        if (dadosNodo.getOrigemFluxo() != null) {
             String ipAdress = InetAddress.getLocalHost().getHostAddress();
             String messageToOrigem = mensagemControlo[0] + "#" + mensagemControlo[1] + "-" + ipAdress + "\n";
-            this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend(messageToOrigem);
+            dadosNodo.getVizinho(dadosNodo.getOrigemFluxo()).addMessagesToSend(messageToOrigem);
         }
 
     }
@@ -106,8 +96,8 @@ public class ThreadOTTReceiver extends Thread {
     private void removeMeFromDestiny(String[] mensagemControlo) {
 
         String ipDestino = mensagemControlo[1];
-        if (rotaFluxo.getDestinosVizinhos().containsKey(ipDestino))
-            rotaFluxo.removeDestino(ipDestino);
+        if (dadosNodo.getRotaFluxo().getDestinosVizinhos().containsKey(ipDestino))
+            dadosNodo.removeDestinoRota(ipDestino);
 
     }
 
@@ -115,48 +105,48 @@ public class ThreadOTTReceiver extends Thread {
         String[] ips = mensagemControlo[1].split("-");
         String ipDestino = ips[ips.length-1];
 
-        if (this.rotaFluxo.getDestinosVizinhos().containsKey(ipDestino)) {
-            this.destinosQueremVerStream.add(ipDestino);
+        if (dadosNodo.getDestinosVizinhos().containsKey(ipDestino)) {
+            dadosNodo.addDestinoQuerVerStream(ipDestino);
         }
         else {
-            for (String vizinho : this.rotaFluxo.getDestinosVizinhos().keySet()) {
-                if (this.rotaFluxo.getDestinosVizinhos().get(vizinho).contains(ipDestino)) {
-                    this.destinosQueremVerStream.add(vizinho);
+            for (String vizinho : dadosNodo.getDestinosVizinhos().keySet()) {
+                if (dadosNodo.getDestinosVizinhos().get(vizinho).contains(ipDestino)) {
+                    dadosNodo.addDestinoQuerVerStream(vizinho);
                 }
             }
         }
 
-        this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend(mensagemControlo[0] + "#" + mensagemControlo[1]  + "-" + this.ipOTT + "\n");
+        dadosNodo.getVizinho(dadosNodo.getOrigemFluxo()).addMessagesToSend(mensagemControlo[0] + "#" + mensagemControlo[1]  + "-" + this.ipOTT + "\n");
     }
 
     public void enviaPedidoParaPausarStream (String[] mensagemControlo) {
         String ipDestino = mensagemControlo[1];
 
-        this.destinosQueremVerStream.remove(ipDestino);
+        dadosNodo.removeDestinoQuerVerStream(ipDestino);
 
-        if (this.destinosQueremVerStream.size() == 0 && !this.isBootstrapper) {
+        if (dadosNodo.getDestinosQueremVerStream().size() == 0 && !this.isBootstrapper) {
             if (!OTT.querVerStream)
-                this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend(mensagemControlo[0] + "#" + this.ipOTT + "\n");
+                dadosNodo.getVizinho(dadosNodo.getOrigemFluxo()).addMessagesToSend(mensagemControlo[0] + "#" + this.ipOTT + "\n");
         }
     }
 
     private void removeNodeThatLeft(String[] mensagemControlo) {
-        if (mensagemControlo[1].equals(this.rotaFluxo.getOrigem())) {
-            this.rotaFluxo = new Rota();
+        if (mensagemControlo[1].equals(dadosNodo.getOrigemFluxo())) {
+            dadosNodo.setRota(new Rota());
         }
 
-        else if (this.rotaFluxo.getDestinosVizinhos().containsKey(mensagemControlo[1])) {
-            this.rotaFluxo.removeDestino(mensagemControlo[1]);
+        else if (dadosNodo.getDestinosVizinhos().containsKey(mensagemControlo[1])) {
+            dadosNodo.removeDestinoRota(mensagemControlo[1]);
 
-            this.destinosQueremVerStream.remove(mensagemControlo[1]);
-            if (this.destinosQueremVerStream.size() == 0 && !this.isBootstrapper) {
+            dadosNodo.removeDestinoQuerVerStream(mensagemControlo[1]);
+            if (dadosNodo.getDestinosQueremVerStream().size() == 0 && !this.isBootstrapper) {
                 if (!OTT.querVerStream)
-                    this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("PauseVideo#" + this.ipOTT + "\n");
+                    dadosNodo.getVizinho(dadosNodo.getOrigemFluxo()).addMessagesToSend("PauseVideo#" + this.ipOTT + "\n");
             }
 
         }
 
-        this.vizinhos.remove(mensagemControlo[1]);
+        dadosNodo.removeVizinho(mensagemControlo[1]);
 
     }
 

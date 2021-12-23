@@ -11,19 +11,14 @@ import java.util.Set;
 public class ThreadOTTReceiverUDP extends Thread {
     private DatagramSocket ds;
     private PacketQueue pq;
-    private String ipAdress;
-    private Rota rotaFluxo;
     private RTPpacketQueue rtpQueue;
-    private Set<String> destinosQueremVerStream;
-    private Map<String, DadosVizinho> vizinhos;
+    private DadosNodo dadosNodo;
 
-    public ThreadOTTReceiverUDP(DatagramSocket ds, PacketQueue pq, String ipAdress, Rota rotaFluxo, RTPpacketQueue rtpQueue, Set<String> destinosQueremVerStream) {
+    public ThreadOTTReceiverUDP(DatagramSocket ds, PacketQueue pq, RTPpacketQueue rtpQueue, DadosNodo dadosNodo) {
         this.ds = ds;
         this.pq = pq;
-        this.ipAdress = ipAdress;
-        this.rotaFluxo = rotaFluxo;
         this.rtpQueue = rtpQueue;
-        this.destinosQueremVerStream = destinosQueremVerStream;
+        this.dadosNodo = dadosNodo;
     }
 
     public void recebePacketVideo (RTPpacket rtp_packet) throws UnknownHostException {
@@ -37,7 +32,7 @@ public class ThreadOTTReceiverUDP extends Thread {
         byte[] packet_bits = new byte[packet_length];
         rtp_packet.getpacket(packet_bits);
 
-        for (String destino : this.destinosQueremVerStream) {
+        for (String destino : this.dadosNodo.getDestinosQueremVerStream()) {
             InetAddress clientIPAddr = InetAddress.getByName(destino);
 
             DatagramPacket dp = new DatagramPacket(packet_bits, packet_length, clientIPAddr, 8888);
@@ -53,8 +48,8 @@ public class ThreadOTTReceiverUDP extends Thread {
         String ipVizinho = new String(payload, StandardCharsets.UTF_8);
         System.out.println("Beacon recebido de " + ipVizinho);
 
-        if (this.vizinhos.get(ipVizinho) != null)
-            this.vizinhos.get(ipVizinho).updateTime();
+        if (this.dadosNodo.getVizinho(ipVizinho) != null)
+            this.dadosNodo.updateTime(ipVizinho);
     }
 
     public void run() {

@@ -4,19 +4,18 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 public class BeaconSender extends Thread {
 
     private PacketQueue packetQueue;
     private String ipAdress;
-    private Map<String, DadosVizinho> vizinhos;
+    private DadosNodo dadosNodo;
     private final int SLEEP_TIME = 5000;
 
-    public BeaconSender(PacketQueue packetQueue, String ipAdress, Map<String, DadosVizinho> vizinhos) {
+    public BeaconSender(PacketQueue packetQueue, String ipAdress, DadosNodo dadosNodo) {
         this.packetQueue = packetQueue;
         this.ipAdress = ipAdress;
-        this.vizinhos = vizinhos;
+        this.dadosNodo = dadosNodo;
     }
 
     public void run() {
@@ -34,8 +33,8 @@ public class BeaconSender extends Thread {
                 byte[] packet_bits = new byte[packet_length];
                 rtp_packet.getpacket(packet_bits);
 
-                for (String vizinho : this.vizinhos.keySet()) {
-                    if (this.vizinhos.get(vizinho) != null) {
+                for (String vizinho : this.dadosNodo.getIpsVizinhos()) {
+                    if (this.dadosNodo.getVizinho(vizinho) != null) {
                         DatagramPacket dp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(vizinho), 8888);
                         packetQueue.addFirst(dp);
                     }

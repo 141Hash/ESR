@@ -12,16 +12,12 @@ public class ThreadOTTPedidos extends Thread {
 
     private DatagramSocket ds;
     private RTPpacketQueue rtpQueue;
-    private Map<String, DadosVizinho> vizinhos;
-    private Rota rotaFluxo;
-    private Set<String> destinosQueremVerStream;
+    private DadosNodo dadosNodo;
 
-    public ThreadOTTPedidos(DatagramSocket ds, RTPpacketQueue rtpQueue, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo, Set<String> destinosQueremVerStream) {
+    public ThreadOTTPedidos(DatagramSocket ds, RTPpacketQueue rtpQueue, DadosNodo dadosNodo) {
         this.ds = ds;
         this.rtpQueue = rtpQueue;
-        this.vizinhos = vizinhos;
-        this.rotaFluxo = rotaFluxo;
-        this.destinosQueremVerStream = destinosQueremVerStream;
+        this.dadosNodo = dadosNodo;
     }
 
     public void run() {
@@ -33,7 +29,7 @@ public class ThreadOTTPedidos extends Thread {
             while (!pedido.equals("EXIT")) {
 
                 if (pedido.startsWith("PLAYER")) {
-                    Thread threadCliente = new Thread(() -> { Cliente cli = new Cliente(ds, rtpQueue, vizinhos, rotaFluxo, destinosQueremVerStream); });
+                    Thread threadCliente = new Thread(() -> { Cliente cli = new Cliente(ds, rtpQueue, dadosNodo); });
                     threadCliente.start();
                 }
 
@@ -41,17 +37,17 @@ public class ThreadOTTPedidos extends Thread {
                 pedido = reader.readLine();
             }
 
-            for (String vizinho: this.vizinhos.keySet()) {
-                if (this.vizinhos.get(vizinho) != null)
-                    this.vizinhos.get(vizinho).addMessagesToSend("Leaving#" + InetAddress.getLocalHost().getHostAddress() + "\n");
+            for (String vizinho: this.dadosNodo.getIpsVizinhos()) {
+                if (this.dadosNodo.getVizinho(vizinho) != null)
+                    this.dadosNodo.getVizinho(vizinho).addMessagesToSend("Leaving#" + InetAddress.getLocalHost().getHostAddress() + "\n");
             }
 
             Thread.sleep(1000);
             OTT.EXIT = true;
 
-            for (String vizinho: this.vizinhos.keySet()) {
-                if (this.vizinhos.get(vizinho) != null)
-                    this.vizinhos.get(vizinho).getMessagesToSend().signalCon();
+            for (String vizinho: this.dadosNodo.getIpsVizinhos()) {
+                if (this.dadosNodo.getVizinho(vizinho) != null)
+                    this.dadosNodo.getVizinho(vizinho).getMessagesToSend().signalCon();
             }
 
             Runtime.getRuntime().halt(0);

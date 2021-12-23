@@ -72,13 +72,13 @@ public class Bootstrapper {
         return topologiaRede;
     }
 
-    public static void estabeleConnectioVizinho(Map<String, DadosVizinho> vizinhos, DataOutputStream dos, BufferedReader dis, Socket socket, Rota rotaFluxo, String[] dadosConnection, String ipAdress, DatagramSocket ds, PacketQueue pq, Set<String> destinosQueremVerStream) {
+    public static void estabeleConnectioVizinho(DataOutputStream dos, BufferedReader dis, Socket socket, String[] dadosConnection, String ipAdress, DadosNodo dadosNodo) {
 
-        rotaFluxo.addDestinoVizinho(dadosConnection[1]);
-        vizinhos.put(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
+        dadosNodo.addDestinoRota(dadosConnection[1]);
+        dadosNodo.addVizinho(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
 
-        ThreadOTTReceiver receiver         = new ThreadOTTReceiver(true, ipAdress, dis, socket, vizinhos, rotaFluxo, ds, pq, destinosQueremVerStream);
-        ThreadOTTSender sender             = new ThreadOTTSender(socket, dos, vizinhos.get(dadosConnection[1]).getMessagesToSend());
+        ThreadOTTReceiver receiver         = new ThreadOTTReceiver(true, ipAdress, dis, dadosNodo);
+        ThreadOTTSender sender             = new ThreadOTTSender(socket, dos, dadosNodo.getVizinho(dadosConnection[1]).getMessagesToSend());
         ThreadSendControlMessage controler = new ThreadSendControlMessage(dos);
 
         receiver.start();
@@ -107,7 +107,7 @@ public class Bootstrapper {
 
     }
 
-    private static void iniciaServidorStreaming(DatagramSocket ds, PacketQueue pq, Rota rotaFluxo, Set<String> destinosQueremVerStream) {
+    private static void iniciaServidorStreaming(DatagramSocket ds, PacketQueue pq, DadosNodo dadosNodo) {
 
         String videoFileName = "../MovieFiles/movie2.Mjpeg";
 
@@ -115,7 +115,7 @@ public class Bootstrapper {
 
         if (f.exists()) {
             //Create a Main object
-            Thread threadServidor = new Thread(() -> { Servidor s = new Servidor(ds, pq, rotaFluxo, videoFileName, destinosQueremVerStream);
+            Thread threadServidor = new Thread(() -> { Servidor s = new Servidor(ds, pq, videoFileName, dadosNodo);
                                                         //show GUI: (opcional!)
                                                         s.pack();
                                                         s.setVisible(true);
@@ -133,25 +133,27 @@ public class Bootstrapper {
         PacketQueue queue        = new PacketQueue();
         RTPpacketQueue rtpQueue  = new RTPpacketQueue();
 
-        Map<String, DadosVizinho> vizinhos = new HashMap<>();
-        Rota rotaFluxo = new Rota();
+        Map<String, DadosVizinho> vizinhos  = new HashMap<>();
+        Set<String> destinosQueremVerStream = new TreeSet<>();
+        Rota rotaFluxo                      = new Rota();
+
+        DadosNodo dadosNodo = new DadosNodo(vizinhos, rotaFluxo, destinosQueremVerStream);
 
         String ipAdress = InetAddress.getLocalHost().getHostAddress();
 
-        Set<String> destinosQueremVerStream = new TreeSet<String>();
-        iniciaServidorStreaming(RTPsocket, queue, rotaFluxo, destinosQueremVerStream);
+        iniciaServidorStreaming(RTPsocket, queue, dadosNodo);
 
         HashMap <String, Set<String>> topologiaRede = readJSonFile();
         Topologia topologia  = new Topologia(topologiaRede);
 
-        ThreadOTTReceiverUDP receiverUDP   = new ThreadOTTReceiverUDP(RTPsocket, queue, ipAdress, rotaFluxo, rtpQueue, destinosQueremVerStream);
+        ThreadOTTReceiverUDP receiverUDP   = new ThreadOTTReceiverUDP(RTPsocket, queue, rtpQueue, dadosNodo);
         ThreadOTTSenderUDP senderUDP = new ThreadOTTSenderUDP(RTPsocket, queue);
         receiverUDP.start();
         senderUDP.start();
 
 
-        BeaconReceiver receiverBeacon = new BeaconReceiver(vizinhos, rotaFluxo, destinosQueremVerStream, ipAdress, true);
-        BeaconSender senderBeacon = new BeaconSender(queue, ipAdress, vizinhos);
+        BeaconReceiver receiverBeacon = new BeaconReceiver(dadosNodo, ipAdress, true);
+        BeaconSender senderBeacon = new BeaconSender(queue, ipAdress, dadosNodo);
         receiverBeacon.start();
         senderBeacon.start();
 
@@ -166,7 +168,7 @@ public class Bootstrapper {
             String[] dadosConnection = line.split("-");
 
             if (dadosConnection.length > 1 && dadosConnection[0].equals("VIZINHO")) {
-                estabeleConnectioVizinho(vizinhos, dos, dis, socket, rotaFluxo, dadosConnection, ipAdress, RTPsocket, queue, destinosQueremVerStream);
+                estabeleConnectioVizinho(dos, dis, socket, dadosConnection, ipAdress, dadosNodo);
             } else {
                 estabeleConnectioInicial(topologia, dos, dis, socket, line);
             }

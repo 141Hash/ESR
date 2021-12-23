@@ -27,8 +27,7 @@ public class Servidor extends JFrame implements ActionListener {
     DatagramPacket senddp; //UDP packet containing the video frames (to send)
     DatagramSocket RTPsocket; //socket to be used to send and receive UDP packet
     PacketQueue queue;
-    Rota rotafluxo;
-    Set<String> destinosQueremVerStream;
+    DadosNodo dadosNodo;
 
     int RTP_dest_port = 8888; //destination port for RTP packets
 
@@ -50,7 +49,7 @@ public class Servidor extends JFrame implements ActionListener {
     //--------------------------
     //Constructor
     //--------------------------
-    public Servidor(DatagramSocket ds, PacketQueue pq, Rota rotaFluxo, String videoFileName, Set<String> destinoQueremVerStream) {
+    public Servidor(DatagramSocket ds, PacketQueue pq, String videoFileName, DadosNodo dadosNodo) {
         //init Frame
         super("Servidor");
 
@@ -63,9 +62,7 @@ public class Servidor extends JFrame implements ActionListener {
         try {
             RTPsocket      = ds; // RTP socket
             queue          = pq; // PacketQueue
-            this.rotafluxo = rotaFluxo;
-
-            this.destinosQueremVerStream = destinoQueremVerStream;
+            this.dadosNodo = dadosNodo;
 
             VideoFileName = videoFileName; // Video name
             video         = new VideoStream(VideoFileName); //init the VideoStream object:
@@ -122,8 +119,8 @@ public class Servidor extends JFrame implements ActionListener {
 
                 //send the packet as a DatagramPacket over the UDP socket
 
-                if (destinosQueremVerStream.size() > 0) {
-                    for (String vizinho : destinosQueremVerStream) {
+                if (dadosNodo.getDestinosQueremVerStream().size() > 0) {
+                    for (String vizinho : dadosNodo.getDestinosQueremVerStream()) {
                         senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(vizinho), RTP_dest_port);
                         queue.add(senddp);
                     }
