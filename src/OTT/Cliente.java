@@ -209,7 +209,8 @@ public class Cliente {
                     RTPpacket rtp_packet = rtPpacketQueue.remove();
 
                     if (rtp_packet == null) {
-                        // Don't do nothing
+                        OTT.querVerStream = false;
+                        cTimer.stop();
                     }
                     else if (rtp_packet.getpayloadtype() == 26) {
                         //print important header fields of the RTP packet received:
