@@ -28,19 +28,19 @@ public class BeaconSender extends Thread {
             try {
 
                 byte[] data  = ipAdress.getBytes(StandardCharsets.UTF_8);
-                RTPpacket rtp_packet = new RTPpacket(11, 0, 0, data, data.length);
+                RTPpacket rtp_packet = new RTPpacket(1, 0, 0, data, data.length);
 
                 int packet_length = rtp_packet.getlength();
                 byte[] packet_bits = new byte[packet_length];
                 rtp_packet.getpacket(packet_bits);
 
                 for (String vizinho : this.vizinhos.keySet()) {
-                    DatagramPacket dp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(vizinho), 8888);
-                    packetQueue.add(dp);
+                    if (this.vizinhos.get(vizinho) != null) {
+                        DatagramPacket dp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(vizinho), 8888);
+                        packetQueue.add(dp);
+                    }
                     System.out.println("Beacon enviado para " + vizinho);
                 }
-
-                System.out.println("Beacon enviado");
 
                 Thread.sleep(SLEEP_TIME);
 

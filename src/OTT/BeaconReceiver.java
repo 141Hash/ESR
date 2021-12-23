@@ -15,7 +15,7 @@ public class BeaconReceiver extends Thread {
         this.vizinhos = vizinhos;
     }
 
-    private void removeIdle(Map<String,DadosVizinho> vizinhos) {
+    private void removeIdle() {
         ArrayList<String> vizinhosToRemove = new ArrayList<>();
 
         for (String vizinho : this.vizinhos.keySet()) {
@@ -33,7 +33,7 @@ public class BeaconReceiver extends Thread {
     public void run () {
         try {
             Thread.sleep(SLEEP_TIME);
-            removeIdle(vizinhos);
+            removeIdle();
         } catch (InterruptedException ignored) { }
     }
 
