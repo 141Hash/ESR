@@ -17,6 +17,8 @@ public class OTT {
 
 	public static boolean EXIT = false;
 	public static boolean querVerStream;
+	public static Map<String, DadosVizinho> vizinhos;
+	public static Rota rotaFluxo;
 
 	private static void estabeleConnectioVizinho(String vizinho, Map<String, DadosVizinho> vizinhos, String ipAdress, Rota rotaFluxo, DatagramSocket ds, PacketQueue pq, Set<String> destinosQueremVerStream) throws IOException {
 		Socket socket = new Socket(vizinho, 8080);
@@ -62,8 +64,8 @@ public class OTT {
 
 	public static void main(String[] args) throws IOException{
 
-		Map<String, DadosVizinho> vizinhos = new HashMap<>();
-		Rota rotaFluxo = new Rota();
+		vizinhos = new HashMap<>();
+		rotaFluxo = new Rota();
 
 		Set<String> destinosQueremVerStream = new TreeSet<String>();
 		querVerStream = false;
