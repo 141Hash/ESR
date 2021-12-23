@@ -103,12 +103,9 @@ public class DadosNodo {
             }
 
             for (String ip : vizinhosToRemove) {
-                if (rotaFluxo.getOrigem() != null) {
-                    if (rotaFluxo.getOrigem().equals(ip)) {
+                if (rotaFluxo.getOrigem() != null && rotaFluxo.getOrigem().equals(ip)) {
                         rotaFluxo = new Rota();
-                    }
                 }
-
                 else if (rotaFluxo.getDestinosVizinhos().containsKey(ip)) {
                     rotaFluxo.removeDestino(ip);
 
