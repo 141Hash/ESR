@@ -19,13 +19,13 @@ public class ThreadOTTSender extends Thread{
     }
 
     public void run () {
-        while (true) {
+        while (!OTT.EXIT || !messagesToSend.isEmpty()) {
 			try {
 				String message = messagesToSend.remove();
 
-				byte[] data = message.getBytes();
-				dos.write(data);
-				dos.flush();
+                byte[] data = message.getBytes();
+                dos.write(data);
+                dos.flush();
 
 			} catch (IOException | InterruptedException ignored){ }
 		}

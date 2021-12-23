@@ -30,30 +30,29 @@ public class ThreadOTTPedidos extends Thread {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String pedido = reader.readLine();
 
-            while (!pedido.equals("exit")) {
+            while (!pedido.equals("EXIT")) {
 
                 if (pedido.startsWith("PLAYER")) {
-                    String videoFile;
-
-                    String[] pedidoArray = pedido.split(" ");
-                    if (pedidoArray.length == 2) {
-                        videoFile = pedidoArray[1];
-                    } else {
-                        videoFile = "";
-                    }
-
-                    Thread threadCliente = new Thread(() -> { Cliente cli = new Cliente(ds, rtpQueue, vizinhos, rotaFluxo, videoFile, destinosQueremVerStream); });
+                    Thread threadCliente = new Thread(() -> { Cliente cli = new Cliente(ds, rtpQueue, vizinhos, rotaFluxo, destinosQueremVerStream); });
                     threadCliente.start();
-
                 }
 
                 System.out.println(pedido);
-
                 pedido = reader.readLine();
             }
 
+            for (String vizinho: this.vizinhos.keySet()) {
+                this.vizinhos.get(vizinho).getMessagesToSend().addFirst("Leaving#" + InetAddress.getLocalHost().getHostAddress() + "\n");
+            }
+
+            OTT.EXIT = true;
+
+            Thread.sleep(1000);
+
+            System.exit(0);
+
         }
-        catch (IOException ignored) { }
+        catch (IOException | InterruptedException ignored) { }
 
     }
 

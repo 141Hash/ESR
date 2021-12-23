@@ -15,7 +15,8 @@ import java.util.TreeSet;
 
 public class OTT {
 
-	static boolean querVerStream;
+	public static boolean EXIT = false;
+	public static boolean querVerStream;
 
 	private static void estabeleConnectioVizinho(String vizinho, Map<String, DadosVizinho> vizinhos, String ipAdress, Rota rotaFluxo, DatagramSocket ds, PacketQueue pq, Set<String> destinosQueremVerStream) throws IOException {
 		Socket socket = new Socket(vizinho, 8080);

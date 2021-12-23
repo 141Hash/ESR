@@ -40,13 +40,12 @@ public class Cliente {
 
     Timer cTimer; //timer used to receive data from the UDP socket
     byte[] cBuf; //buffer used to store data received from the server
-    String VideoFilneName;
  
     //--------------------------
     //Constructor
     //--------------------------
 
-    public Cliente(DatagramSocket ds, RTPpacketQueue rtpQueue, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo, String videoFilneName, Set<String> destinosQueremVerStream) {
+    public Cliente(DatagramSocket ds, RTPpacketQueue rtpQueue, Map<String, DadosVizinho> vizinhos, Rota rotaFluxo, Set<String> destinosQueremVerStream) {
         //build GUI
         //--------------------------
 
@@ -67,9 +66,9 @@ public class Cliente {
         buttonPanel.add(tearButton);
 
         // handlers... (so dois)
-        playButton.addActionListener(new playButtonListener(rotaFluxo, vizinhos, videoFilneName));
-        pauseButton.addActionListener(new pauseButtonListener(rotaFluxo, vizinhos, videoFilneName, destinosQueremVerStream));
-        tearButton.addActionListener(new tearButtonListener());
+        playButton.addActionListener(new playButtonListener(rotaFluxo, vizinhos));
+        pauseButton.addActionListener(new pauseButtonListener(rotaFluxo, vizinhos, destinosQueremVerStream));
+        tearButton.addActionListener(new tearButtonListener(vizinhos));
 
         //Image display label
         iconLabel.setIcon(null);
@@ -96,7 +95,6 @@ public class Cliente {
             // socket e video
             this.vizinhos = vizinhos;
             this.rotaFluxo = rotaFluxo;
-            this.VideoFilneName = videoFilneName;
             this.destinosQueremVerStream = destinosQueremVerStream;
             rtPpacketQueue = rtpQueue;
             RTPsocket = ds; //init RTP socket (o mesmo para o cliente e servidor)
@@ -116,12 +114,10 @@ public class Cliente {
 
         Rota rotaFluxo;
         Map<String, DadosVizinho> vizinhos;
-        String VideoFilneName;
 
-        public playButtonListener(Rota rotaFluxo, Map<String, DadosVizinho> vizinhos, String videoFilneName) {
+        public playButtonListener(Rota rotaFluxo, Map<String, DadosVizinho> vizinhos) {
             this.rotaFluxo = rotaFluxo;
             this.vizinhos = vizinhos;
-            this.VideoFilneName = videoFilneName;
         }
 
         public void actionPerformed(ActionEvent e){
@@ -147,12 +143,10 @@ public class Cliente {
         Rota rotaFluxo;
         Map<String, DadosVizinho> vizinhos;
         Set<String> destinosQueremVerStream;
-        String VideoFilneName;
 
-        public pauseButtonListener(Rota rotaFluxo, Map<String, DadosVizinho> vizinhos, String videoFilneName, Set<String> destinosQueremVerStream) {
+        public pauseButtonListener(Rota rotaFluxo, Map<String, DadosVizinho> vizinhos, Set<String> destinosQueremVerStream) {
             this.rotaFluxo = rotaFluxo;
             this.vizinhos = vizinhos;
-            this.VideoFilneName = videoFilneName;
             this.destinosQueremVerStream = destinosQueremVerStream;
         }
 
@@ -178,13 +172,27 @@ public class Cliente {
     //Handler for tear button
     //-----------------------
     class tearButtonListener implements ActionListener {
+
+        Map<String, DadosVizinho> vizinhos;
+
+        public tearButtonListener(Map<String, DadosVizinho> vizinhos) {
+            this.vizinhos = vizinhos;
+        }
+
         public void actionPerformed(ActionEvent e){
 
-            System.out.println("Teardown Button pressed !");
-            //stop the timer
-            cTimer.stop();
-            //exit
-            System.exit(0);
+            try {
+                for (String vizinho: this.vizinhos.keySet()) {
+                    this.vizinhos.get(vizinho).getMessagesToSend().addFirst("Leaving#" + InetAddress.getLocalHost().getHostAddress() + "\n");
+                }
+
+                OTT.EXIT = true;
+                cTimer.stop();
+
+                Thread.sleep(1000);
+                System.exit(0);
+
+            } catch (InterruptedException | UnknownHostException ignored) { }
         }
     }
 

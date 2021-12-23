@@ -133,11 +133,22 @@ public class ThreadOTTReceiver extends Thread{
         }
     }
 
+    private void removeNodeLeft(String[] mensagemControlo) {
+        if (mensagemControlo[1].equals(this.rotaFluxo.getOrigem())) {
+            this.rotaFluxo = new Rota();
+        }
+        else if (this.rotaFluxo.getDestinosVizinhos().containsKey(mensagemControlo[1])) {
+            this.rotaFluxo.removeDestino(mensagemControlo[1]);
+        }
+        this.vizinhos.remove(mensagemControlo[1]);
+    }
+
 
     public void run () {
 	    String line;
-    	try {       
-   		    while ((line = dis.readLine()) != null) {
+    	try {
+    	    while (!OTT.EXIT) {
+                line = dis.readLine();
 
                 String[] mensagemControlo = line.split("#");
    		        if (mensagemControlo.length > 2 && mensagemControlo[0].equals("RouteControl")) {
@@ -148,6 +159,9 @@ public class ThreadOTTReceiver extends Thread{
                 }
    		        else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("DontUseMeAsDestiny")) {
    		            removeMeFromDestiny(mensagemControlo);
+                }
+                else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("Leaving")) {
+                    removeNodeLeft(mensagemControlo);
                 }
    		        else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("GetVideo")) {
    		            enviaPedidoParaVerStream(mensagemControlo);

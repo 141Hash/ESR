@@ -14,13 +14,6 @@
 
 ############################## TO DO ##############################
 
-❌ Começar a completar e a utilizar código dado pelo Stor que possui implementação UDP com Packets para streaming.
-    . Ligação UDP:
-        - Tentar implementar um Keep Alive (para saídas bruscas e inesperadas) e um Safe Exit para saída segura de um dado Nodo
-
-❌ Servidor:
-    .
-
 ❌ Fazer Teardown, que é o mesmo que SafeExit (escrever EXIT no terminal)
 
 ❌ Mandar mensagem ao Servidor para parar de mandar vídeo
