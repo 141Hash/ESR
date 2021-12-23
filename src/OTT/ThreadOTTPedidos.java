@@ -48,9 +48,9 @@ public class ThreadOTTPedidos extends Thread {
                 this.vizinhos.get(vizinho).getMessagesToSend().signalCon();
             }
 
-            OTT.EXIT = true;
-
             Thread.sleep(1000);
+
+            OTT.EXIT = true;
 
             System.exit(0);
 

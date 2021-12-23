@@ -133,7 +133,7 @@ public class ThreadOTTReceiver extends Thread{
         }
     }
 
-    private void removeNodeLeft(String[] mensagemControlo) {
+    private void removeNodeThatLeft(String[] mensagemControlo) {
         if (mensagemControlo[1].equals(this.rotaFluxo.getOrigem())) {
             this.rotaFluxo = new Rota();
         }
@@ -161,7 +161,7 @@ public class ThreadOTTReceiver extends Thread{
    		            removeMeFromDestiny(mensagemControlo);
                 }
                 else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("Leaving")) {
-                    removeNodeLeft(mensagemControlo);
+                    removeNodeThatLeft(mensagemControlo);
                 }
    		        else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("GetVideo")) {
    		            enviaPedidoParaVerStream(mensagemControlo);

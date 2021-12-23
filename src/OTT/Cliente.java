@@ -189,8 +189,9 @@ public class Cliente {
                     this.vizinhos.get(vizinho).getMessagesToSend().signalCon();
                 }
 
-                OTT.EXIT = true;
                 Thread.sleep(1000);
+                
+                OTT.EXIT = true;
 
                 cTimer.stop();
                 System.exit(0);
