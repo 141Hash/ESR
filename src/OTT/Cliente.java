@@ -122,16 +122,19 @@ public class Cliente {
 
         public void actionPerformed(ActionEvent e){
             try {
+                if (rotaFluxo.getOrigem() != null) {
+                    this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("GetVideo#" + InetAddress.getLocalHost().getHostAddress() + "\n");
+                    OTT.querVerStream = true;
 
-                this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("GetVideo#" + InetAddress.getLocalHost().getHostAddress() + "\n");
-                OTT.querVerStream = true;
-
+                    System.out.println("Play Button pressed !");
+                    //start the timers ...
+                    cTimer.start();
+                } else {
+                    System.out.println("Não se encontra ligado a nenhum Nodo de momento");
+                }
             } catch (UnknownHostException unknownHostException) {
                 unknownHostException.printStackTrace();
             }
-            System.out.println("Play Button pressed !");
-                //start the timers ...
-                cTimer.start();
         }
 
     }
@@ -155,16 +158,16 @@ public class Cliente {
             OTT.querVerStream = false;
 
             try {
-                if (this.destinosQueremVerStream.size() == 0) {
+                if (this.destinosQueremVerStream.size() == 0 && this.rotaFluxo.getOrigem() != null) {
                     this.vizinhos.get(this.rotaFluxo.getOrigem()).addMessagesToSend("PauseVideo#" + InetAddress.getLocalHost().getHostAddress() + "\n");
+
+                    System.out.println("Play Pause pressed !");
+                    //start the timers ...
+                    cTimer.stop();
                 }
             } catch (UnknownHostException unknownHostException) {
                 unknownHostException.printStackTrace();
             }
-
-            System.out.println("Play Pause pressed !");
-            //start the timers ...
-            cTimer.stop();
         }
 
     }

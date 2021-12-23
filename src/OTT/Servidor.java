@@ -122,9 +122,11 @@ public class Servidor extends JFrame implements ActionListener {
 
                 //send the packet as a DatagramPacket over the UDP socket
 
-                for (String vizinho : this.destinosQueremVerStream) {
-                    senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(vizinho), RTP_dest_port);
-                    queue.add(senddp);
+                if (destinosQueremVerStream.size() > 0) {
+                    for (String vizinho : destinosQueremVerStream) {
+                        senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(vizinho), RTP_dest_port);
+                        queue.add(senddp);
+                    }
                 }
 
                 System.out.println("Send frame #"+imagenb);
