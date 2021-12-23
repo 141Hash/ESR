@@ -43,6 +43,7 @@ public class OTT {
 
 		if (dadosConnection.length > 1 && dadosConnection[0].equals("VIZINHO")) {
 			vizinhos.put(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
+			rotaFluxo.addDestinoVizinho(dadosConnection[1]);
 
 			ThreadOTTReceiver receiver = new ThreadOTTReceiver(false, ipAdress, dis, socket, vizinhos, rotaFluxo, ds, pq, destinosQueremVerStream);
 			ThreadOTTSender sender     = new ThreadOTTSender(socket, dos, vizinhos.get(dadosConnection[1]).getMessagesToSend());
