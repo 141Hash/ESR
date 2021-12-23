@@ -65,6 +65,7 @@ public class ThreadOTTReceiverUDP extends Thread {
                 ds.receive(dp);
 
                 RTPpacket rtp_packet = new RTPpacket(dp.getData(), dp.getLength());
+                System.out.println("Tipo do pacote recebido = " + rtp_packet.getpayloadtype());
 
                 if (rtp_packet.getpayloadtype() == 26) {
                     recebePacketVideo(rtp_packet);
