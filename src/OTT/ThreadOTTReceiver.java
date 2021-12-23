@@ -149,33 +149,36 @@ public class ThreadOTTReceiver extends Thread {
     	try {
     	    while (!OTT.EXIT) {
                 line = dis.readLine();
-                System.out.println(line);
 
-                String[] mensagemControlo = line.split("#");
+                if (line != null) {
 
-   		        if (mensagemControlo.length > 2 && mensagemControlo[0].equals("RouteControl")) {
-   		            adicionaMensagemControloVizinhos(mensagemControlo);
-                }
-   		        else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("TotalDestinies")) {
-                    adicionaDestinosTotais(mensagemControlo);
-                }
-   		        else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("DontUseMeAsDestiny")) {
-   		            removeMeFromDestiny(mensagemControlo);
-                }
-                else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("Leaving")) {
-                    removeNodeThatLeft(mensagemControlo);
-                    break;
-                }
-   		        else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("GetVideo")) {
-   		            enviaPedidoParaVerStream(mensagemControlo);
-                }
-                else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("PauseVideo")) {
-                    enviaPedidoParaPausarStream(mensagemControlo);
-                } else {
-                    System.out.println("NÃO SEI DO QUE SE TRATA");
-                }
-   		        System.out.println(line);
+                    String[] mensagemControlo = line.split("#");
 
+                    if (mensagemControlo.length > 2 && mensagemControlo[0].equals("RouteControl")) {
+                        adicionaMensagemControloVizinhos(mensagemControlo);
+                    }
+                    else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("TotalDestinies")) {
+                        adicionaDestinosTotais(mensagemControlo);
+                    }
+                    else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("DontUseMeAsDestiny")) {
+                        removeMeFromDestiny(mensagemControlo);
+                    }
+                    else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("Leaving")) {
+                        removeNodeThatLeft(mensagemControlo);
+                        break;
+                    }
+                    else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("GetVideo")) {
+                        enviaPedidoParaVerStream(mensagemControlo);
+                    }
+                    else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("PauseVideo")) {
+                        enviaPedidoParaPausarStream(mensagemControlo);
+                    } else {
+                        System.out.println("I don't know what to do");
+                    }
+                    System.out.println(line);
+
+                }
+                
 		    }
 	    } catch (IOException ignored) { }
     }
