@@ -34,9 +34,12 @@ public class BeaconReceiver extends Thread {
         }
 
         for (String ip : vizinhosToRemove) {
-            if (this.rotaFluxo.getOrigem().equals(ip)) {
-                this.rotaFluxo = new Rota();
+            if (this.rotaFluxo.getOrigem() != null) {
+                if (this.rotaFluxo.getOrigem().equals(ip)) {
+                    this.rotaFluxo = new Rota();
+                }
             }
+
             else if (this.rotaFluxo.getDestinosVizinhos().containsKey(ip)) {
                 this.rotaFluxo.removeDestino(ip);
 
