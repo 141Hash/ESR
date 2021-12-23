@@ -72,12 +72,12 @@ public class Bootstrapper {
         return topologiaRede;
     }
 
-    public static void estabeleConnectioVizinho(DataOutputStream dos, BufferedReader dis, Socket socket, String[] dadosConnection, String ipAdress, DadosNodo dadosNodo) {
+    public static void estabeleConnectioVizinho(DataOutputStream dos, BufferedReader dis, Socket socket, String[] dadosConnection, String ipAdress, DadosNodo dadosNodo, RTPpacketQueue rtpQueue) {
 
         dadosNodo.addDestinoRota(dadosConnection[1]);
         dadosNodo.addVizinho(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
 
-        ThreadOTTReceiver receiver         = new ThreadOTTReceiver(true, ipAdress, dis, dadosNodo);
+        ThreadOTTReceiver receiver         = new ThreadOTTReceiver(true, ipAdress, dis, dadosNodo, rtpQueue);
         ThreadOTTSender sender             = new ThreadOTTSender(socket, dos, dadosNodo.getVizinho(dadosConnection[1]).getMessagesToSend());
         ThreadSendControlMessage controler = new ThreadSendControlMessage(dos);
 
@@ -168,7 +168,7 @@ public class Bootstrapper {
             String[] dadosConnection = line.split("-");
 
             if (dadosConnection.length > 1 && dadosConnection[0].equals("VIZINHO")) {
-                estabeleConnectioVizinho(dos, dis, socket, dadosConnection, ipAdress, dadosNodo);
+                estabeleConnectioVizinho(dos, dis, socket, dadosConnection, ipAdress, dadosNodo, rtpQueue);
             } else {
                 estabeleConnectioInicial(topologia, dos, dis, socket, line);
             }

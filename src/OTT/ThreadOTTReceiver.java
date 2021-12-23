@@ -15,12 +15,14 @@ public class ThreadOTTReceiver extends Thread {
     private String ipOTT;
     private BufferedReader dis;
     private DadosNodo dadosNodo;
+    private RTPpacketQueue rtPpacketQueue;
 
-    public ThreadOTTReceiver(boolean isBootstrapper, String ipOTT, BufferedReader dis, DadosNodo dadosNodo) {
+    public ThreadOTTReceiver(boolean isBootstrapper, String ipOTT, BufferedReader dis, DadosNodo dadosNodo, RTPpacketQueue rtPpacketQueue) {
         this.isBootstrapper = isBootstrapper;
         this.ipOTT = ipOTT;
         this.dis = dis;
         this.dadosNodo = dadosNodo;
+        this.rtPpacketQueue = rtPpacketQueue;
     }
 
     public void adicionaMensagemControloVizinhos (String[] mensagemControlo) {
@@ -150,8 +152,8 @@ public class ThreadOTTReceiver extends Thread {
 
         }
 
+        rtPpacketQueue.signalCon();
         dadosNodo.removeVizinho(mensagemControlo[1]);
-
     }
 
 

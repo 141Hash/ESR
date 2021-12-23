@@ -204,7 +204,7 @@ public class Cliente {
         public void actionPerformed(ActionEvent e) {
 
             try {
-                if (OTT.querVerStream) {
+                if (OTT.querVerStream && dadosNodo.getOrigemFluxo() != null) {
                     //create an RTPpacket object from the DP
                     RTPpacket rtp_packet = rtPpacketQueue.remove();
 

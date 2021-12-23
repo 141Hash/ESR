@@ -18,7 +18,7 @@ public class OTT {
 	public static boolean EXIT = false;
 	public static boolean querVerStream;
 
-	private static void estabeleConnectioVizinho(String vizinho, String ipAdress, DatagramSocket ds, PacketQueue pq, DadosNodo dadosNodo) throws IOException {
+	private static void estabeleConnectioVizinho(String vizinho, String ipAdress, RTPpacketQueue rtPpacketQueue, DadosNodo dadosNodo) throws IOException {
 		Socket socket = new Socket(vizinho, 8080);
 
 		DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
@@ -31,7 +31,7 @@ public class OTT {
 			dos.write(mensagemConnectionVizinho);
 			dos.flush();
 
-			ThreadOTTReceiver receiver = new ThreadOTTReceiver(false, ipAdress, dis, dadosNodo);
+			ThreadOTTReceiver receiver = new ThreadOTTReceiver(false, ipAdress, dis, dadosNodo, rtPpacketQueue);
 			ThreadOTTSender sender     = new ThreadOTTSender(socket, dos, dadosNodo.getVizinho(vizinho).getMessagesToSend());
 
 			receiver.start();
@@ -39,13 +39,13 @@ public class OTT {
 		}
 	}
 
-	private static void estabeleConnectioVizinhoWaiting(String[] dadosConnection, DataOutputStream dos, BufferedReader dis, Socket socket, String ipAdress, DadosNodo dadosNodo) throws IOException {
+	private static void estabeleConnectioVizinhoWaiting(String[] dadosConnection, DataOutputStream dos, BufferedReader dis, Socket socket, String ipAdress, DadosNodo dadosNodo, RTPpacketQueue rtPpacketQueue) throws IOException {
 
 		if (dadosConnection.length > 1 && dadosConnection[0].equals("VIZINHO")) {
 			dadosNodo.addVizinho(dadosConnection[1], new DadosVizinho(dadosConnection[1], dos, dis, socket));
 			dadosNodo.addDestinoRota(dadosConnection[1]);
 
-			ThreadOTTReceiver receiver = new ThreadOTTReceiver(false, ipAdress, dis, dadosNodo);
+			ThreadOTTReceiver receiver = new ThreadOTTReceiver(false, ipAdress, dis, dadosNodo, rtPpacketQueue);
 			ThreadOTTSender sender     = new ThreadOTTSender(socket, dos, dadosNodo.getVizinho(dadosConnection[1]).getMessagesToSend());
 
 			receiver.start();
@@ -112,7 +112,7 @@ public class OTT {
 		// Tenta ligar a outros OTTs
 		for (String vizinho : dadosNodo.getIpsVizinhos()) {
 			try {
-				estabeleConnectioVizinho(vizinho, ipAdress, RTPsocket, queue, dadosNodo);
+				estabeleConnectioVizinho(vizinho, ipAdress, rtpQueue, dadosNodo);
 			}
 			catch (UnknownHostException | ConnectException ignored) { }
 		}
@@ -128,7 +128,7 @@ public class OTT {
 			String linha = dis.readLine();
 			String[] dadosConnection = linha.split("-");
 
-			estabeleConnectioVizinhoWaiting(dadosConnection, dos, dis, socket, ipAdress, dadosNodo);
+			estabeleConnectioVizinhoWaiting(dadosConnection, dos, dis, socket, ipAdress, dadosNodo, rtpQueue);
 
 		}
 
