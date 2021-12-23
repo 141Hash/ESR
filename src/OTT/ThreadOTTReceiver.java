@@ -178,7 +178,7 @@ public class ThreadOTTReceiver extends Thread {
                     System.out.println(line);
 
                 }
-                
+
 		    }
 	    } catch (IOException ignored) { }
     }
