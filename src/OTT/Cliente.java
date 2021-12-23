@@ -210,7 +210,7 @@ public class Cliente {
 
                     if (rtp_packet.getpayloadtype() == 26) {
                         //print important header fields of the RTP packet received:
-                        System.out.println("Got RTP packet with SeqNum # "+rtp_packet.getsequencenumber()+" TimeStamp "+rtp_packet.gettimestamp()+" ms, of type "+rtp_packet.getpayloadtype());
+                        //System.out.println("Got RTP packet with SeqNum # "+rtp_packet.getsequencenumber()+" TimeStamp "+rtp_packet.gettimestamp()+" ms, of type "+rtp_packet.getpayloadtype());
 
                         //print header bitstream:
                         rtp_packet.printheader();

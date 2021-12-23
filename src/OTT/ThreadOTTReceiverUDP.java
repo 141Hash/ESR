@@ -46,7 +46,6 @@ public class ThreadOTTReceiverUDP extends Thread {
         rtp_packet.getpayload(payload);
 
         String ipVizinho = new String(payload, StandardCharsets.UTF_8);
-        System.out.println("Beacon recebido de " + ipVizinho);
 
         if (this.dadosNodo.getVizinho(ipVizinho) != null)
             this.dadosNodo.updateTime(ipVizinho);

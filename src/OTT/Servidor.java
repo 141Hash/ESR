@@ -126,9 +126,9 @@ public class Servidor extends JFrame implements ActionListener {
                     }
                 }
 
-                System.out.println("Send frame #"+imagenb);
+                //System.out.println("Send frame #"+imagenb);
                 //print the header bitstream
-                rtp_packet.printheader();
+                //rtp_packet.printheader();
 
                 //update GUI
                 label.setText("Send frame #" + imagenb);
