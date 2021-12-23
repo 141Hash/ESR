@@ -190,11 +190,6 @@ public class Cliente {
                 OTT.EXIT = true;
                 Thread.sleep(1000);
 
-                for (String vizinho: this.vizinhos.keySet()) {
-                    if (this.vizinhos.get(vizinho) != null)
-                        this.vizinhos.get(vizinho).getMessagesToSend().signalCon();
-                }
-
                 cTimer.stop();
                 Runtime.getRuntime().halt(0);
 

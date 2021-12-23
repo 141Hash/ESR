@@ -19,7 +19,7 @@ public class ThreadOTTSender extends Thread{
     }
 
     public void run () {
-        while (!OTT.EXIT) {
+        while (!OTT.EXIT || !messagesToSend.isEmpty()) {
 			try {
 				String message = messagesToSend.remove();
 
@@ -30,7 +30,7 @@ public class ThreadOTTSender extends Thread{
                     System.out.println("Sended message");
                 }
 
-			} catch (IOException | InterruptedException ignored){ }
+			} catch (IOException | InterruptedException ignored) { }
 		}
     }
 
