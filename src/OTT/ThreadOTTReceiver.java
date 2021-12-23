@@ -170,7 +170,7 @@ public class ThreadOTTReceiver extends Thread{
                 else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("PauseVideo")) {
                     enviaPedidoParaPausarStream(mensagemControlo);
                 } else {
-
+                    System.out.println("NÃO SEI DO QUE SE TRATA");
                 }
    		        System.out.println(line);
 
