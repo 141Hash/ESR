@@ -49,12 +49,15 @@ public class ThreadOTTReceiver extends Thread {
                 }
             }
         }
+
         else if (!ipOrigem.equals(rotaFluxo.getOrigem())) {
             String ipAdress = InetAddress.getLocalHost().getHostAddress();
 
             String dontUseMeAsDestiny = "DontUseMeAsDestiny#" + ipAdress + "\n";
             this.vizinhos.get(ipOrigem).addMessagesToSend(dontUseMeAsDestiny);
         }
+
+        rotaFluxo.removeDestino(rotaFluxo.getOrigem());
 
         System.out.println(rotaFluxo.toString());
         nrSaltos++;
