@@ -1,12 +1,5 @@
 package OTT;
 
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
-
 public class BeaconReceiver extends Thread {
 
     private DadosNodo dadosNodo;
@@ -27,8 +20,8 @@ public class BeaconReceiver extends Thread {
         while (true) {
             try {
                 Thread.sleep(SLEEP_TIME);
-                dadosNodo.removeIdle(isBootstrapper, ipAdress);
-                rtPpacketQueue.signalCon();
+                if (dadosNodo.removeIdle(isBootstrapper, ipAdress))
+                    rtPpacketQueue.signalCon();
             } catch (InterruptedException ignored) { }
         }
     }

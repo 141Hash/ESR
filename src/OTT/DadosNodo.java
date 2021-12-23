@@ -89,7 +89,7 @@ public class DadosNodo {
         }
     }
 
-    public void removeIdle (boolean isBootstrapper, String ipAdress) {
+    public boolean removeIdle (boolean isBootstrapper, String ipAdress) {
         lockVizinhos.lock();
         lockRota.lock();
         lockDestinosStream.lock();
@@ -120,6 +120,8 @@ public class DadosNodo {
                 this.vizinhos.remove(ip);
                 System.out.println("Vizinho " + ip + " removido por idle\n");
             }
+
+            return (vizinhosToRemove.size() > 0);
         } finally {
             lockVizinhos.unlock();
             lockRota.unlock();
