@@ -163,6 +163,7 @@ public class ThreadOTTReceiver extends Thread{
                 }
                 else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("Leaving")) {
                     removeNodeThatLeft(mensagemControlo);
+                    break;
                 }
    		        else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("GetVideo")) {
    		            enviaPedidoParaVerStream(mensagemControlo);
