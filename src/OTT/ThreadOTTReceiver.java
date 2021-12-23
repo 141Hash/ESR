@@ -10,7 +10,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
 
-public class ThreadOTTReceiver extends Thread{
+public class ThreadOTTReceiver extends Thread {
     private boolean isBootstrapper;
     private String ipOTT;
     private BufferedReader dis;
@@ -149,6 +149,7 @@ public class ThreadOTTReceiver extends Thread{
     	try {
     	    while (!OTT.EXIT) {
                 line = dis.readLine();
+                System.out.println(line);
 
                 String[] mensagemControlo = line.split("#");
 
