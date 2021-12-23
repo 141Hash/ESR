@@ -44,6 +44,9 @@ public class ThreadOTTPedidos extends Thread {
             for (String vizinho: this.vizinhos.keySet()) {
                 this.vizinhos.get(vizinho).getMessagesToSend().addFirst("Leaving#" + InetAddress.getLocalHost().getHostAddress() + "\n");
             }
+            for (String vizinho: this.vizinhos.keySet()) {
+                this.vizinhos.get(vizinho).getMessagesToSend().signalCon();
+            }
 
             OTT.EXIT = true;
 
