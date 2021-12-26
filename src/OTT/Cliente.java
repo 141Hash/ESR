@@ -237,6 +237,11 @@ public class Cliente {
                         cTimer.stop();
                     }
                 }
+                else {
+                    OTT.querVerStream = false;
+
+                    cTimer.stop();
+                }
             }
             catch (InterruptedException ignored) { }
         }
