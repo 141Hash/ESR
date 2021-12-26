@@ -27,6 +27,8 @@ public class ThreadOTTSender extends Thread{
                     byte[] data = message.getBytes();
                     dos.write(data);
                     dos.flush();
+                } else {
+                    System.out.println("Left the program");
                 }
 
 			} catch (IOException | InterruptedException ignored) { }
