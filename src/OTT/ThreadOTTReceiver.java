@@ -138,7 +138,7 @@ public class ThreadOTTReceiver extends Thread {
         }
     }
 
-    private void removeNodeThatLeft(String[] mensagemControlo) {
+    private void removeNodeThatLeft(String[] mensagemControlo) throws InterruptedException {
         if (mensagemControlo[1].equals(dadosNodo.getOrigemFluxo())) {
             dadosNodo.setRota(new Rota());
         }
@@ -156,6 +156,7 @@ public class ThreadOTTReceiver extends Thread {
 
         dadosNodo.removeVizinho(mensagemControlo[1]);
 
+        Thread.sleep(1000);
         rtPpacketQueue.signalCon();
     }
 
@@ -196,7 +197,7 @@ public class ThreadOTTReceiver extends Thread {
                 }
 
 		    }
-	    } catch (IOException e) {
+	    } catch (IOException | InterruptedException e) {
     	    e.printStackTrace();
         }
     }
