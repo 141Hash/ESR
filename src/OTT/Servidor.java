@@ -17,7 +17,7 @@ import javax.swing.Timer;
 import javax.swing.border.LineBorder;
 
 
-public class Servidor extends JFrame implements ActionListener {
+public class Servidor extends JFrame {
 
     //GUI:
     //----------------
@@ -57,7 +57,7 @@ public class Servidor extends JFrame implements ActionListener {
         super("Servidor");
 
         // init para a parte do servidor
-        sTimer = new Timer(FRAME_PERIOD, this); //init Timer para servidor
+        sTimer = new Timer(FRAME_PERIOD, new serverTimerListener()); //init Timer para servidor
         sTimer.setInitialDelay(0);
         sTimer.setCoalesce(true);
         sBuf = new byte[MAX_SIZE_PACKET]; //allocate memory for the sending buffer
@@ -112,6 +112,7 @@ public class Servidor extends JFrame implements ActionListener {
 
         public void actionPerformed (ActionEvent e) {
             try {
+                sTimer.stop();
 
                 int counterInicial = counter;
                 counter++;
@@ -121,19 +122,18 @@ public class Servidor extends JFrame implements ActionListener {
                 }
 
                 if (counter != counterInicial) {
-                    sTimer.stop();
 
                     imagenb = 0;
 
-                    sTimer = new Timer(FRAME_PERIOD, this);
+                    sTimer = new Timer(FRAME_PERIOD, new serverTimerListener());
                     sTimer.setInitialDelay(0);
                     sTimer.setCoalesce(true);
 
                     video = new VideoStream(VideoFileNames.get(counter));
 
-                    sTimer.start();
                 }
 
+                sTimer.start();
             }
             catch (Exception exception) {
                 exception.printStackTrace();
@@ -147,62 +147,67 @@ public class Servidor extends JFrame implements ActionListener {
     //------------------------
     //Handler for timer
     //------------------------
-    public void actionPerformed (ActionEvent e) {
+    class serverTimerListener implements ActionListener {
 
-        try {
-            //if the current image nb is less than the length of the video
-            if (imagenb < VIDEO_LENGTH) {
-                //update current imagenb
-                imagenb++;
+        public void actionPerformed (ActionEvent e) {
 
-                //get next frame to send from the video, as well as its size
-                int image_length = video.getnextframe(sBuf);
+            try {
+                //if the current image nb is less than the length of the video
+                if (imagenb < VIDEO_LENGTH) {
+                    //update current imagenb
+                    imagenb++;
 
-                //Builds an RTPpacket object containing the frame
-                RTPpacket rtp_packet = new RTPpacket(MJPEG_TYPE, imagenb, imagenb*FRAME_PERIOD, sBuf, image_length);
+                    //get next frame to send from the video, as well as its size
+                    int image_length = video.getnextframe(sBuf);
 
-                //get to total length of the full rtp packet to send
-                int packet_length = rtp_packet.getlength();
+                    //Builds an RTPpacket object containing the frame
+                    RTPpacket rtp_packet = new RTPpacket(MJPEG_TYPE, imagenb, imagenb*FRAME_PERIOD, sBuf, image_length);
 
-                //retrieve the packet bitstream and store it in an array of bytes
-                byte[] packet_bits = new byte[packet_length];
-                rtp_packet.getpacket(packet_bits);
+                    //get to total length of the full rtp packet to send
+                    int packet_length = rtp_packet.getlength();
 
-                //send the packet as a DatagramPacket over the UDP socket
+                    //retrieve the packet bitstream and store it in an array of bytes
+                    byte[] packet_bits = new byte[packet_length];
+                    rtp_packet.getpacket(packet_bits);
 
-                if (dadosNodo.getDestinosQueremVerStream().size() > 0) {
-                    for (String vizinho : dadosNodo.getDestinosQueremVerStream()) {
-                        senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(vizinho), RTP_dest_port);
-                        queue.add(senddp);
+                    //send the packet as a DatagramPacket over the UDP socket
+
+                    if (dadosNodo.getDestinosQueremVerStream().size() > 0) {
+                        for (String vizinho : dadosNodo.getDestinosQueremVerStream()) {
+                            senddp = new DatagramPacket(packet_bits, packet_length, InetAddress.getByName(vizinho), RTP_dest_port);
+                            queue.add(senddp);
+                        }
                     }
+
+                    //System.out.println("Send frame #"+imagenb);
+                    //print the header bitstream
+                    //rtp_packet.printheader();
+
+                    //update GUI
+                    label.setText("Send frame #" + imagenb);
+
+
+                } else {
+
+                    imagenb = 0;
+                    //if we have reached the end of the video file, stop the timer
+                    sTimer.stop();
+
+                    sTimer = new Timer(FRAME_PERIOD, this); //init Timer para servidor
+                    sTimer.setInitialDelay(0);
+                    sTimer.setCoalesce(true);
+
+                    video = new VideoStream(VideoFileNames.get(counter));
+
+                    sTimer.start();
                 }
-
-                //System.out.println("Send frame #"+imagenb);
-                //print the header bitstream
-                //rtp_packet.printheader();
-
-                //update GUI
-                label.setText("Send frame #" + imagenb);
-
-
-            } else {
-
-                imagenb = 0;
-                //if we have reached the end of the video file, stop the timer
-                sTimer.stop();
-
-                sTimer = new Timer(FRAME_PERIOD, this); //init Timer para servidor
-                sTimer.setInitialDelay(0);
-                sTimer.setCoalesce(true);
-
-                video = new VideoStream(VideoFileNames.get(counter));
-
-                sTimer.start();
+            } catch (Exception ex) {
+                System.out.println("Exception caught: "+ex);
+                System.exit(0);
             }
-        } catch (Exception ex) {
-            System.out.println("Exception caught: "+ex);
-            System.exit(0);
         }
+
     }
+
 
 }//end of Class Servidor
