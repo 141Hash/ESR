@@ -34,7 +34,7 @@ public class ThreadOTTReceiver extends Thread {
             String ipOrigem = historico.get(historico.size() - 1);
             int nrSaltos    = Integer. parseInt(mensagemControlo[1]);
 
-            if (dadosNodo.getRotaFluxo().getCusto() == -1 || dadosNodo.getRotaFluxo().getCusto() >= nrSaltos) {
+            if (dadosNodo.getRotaFluxo().getCusto() == -1 || dadosNodo.getRotaFluxo().getCusto() > nrSaltos) {
                 dadosNodo.getRotaFluxo().setCusto(nrSaltos);
                 dadosNodo.getRotaFluxo().setOrigem(ipOrigem);
                 for (String vizinho : this.dadosNodo.getIpsVizinhos()) {
@@ -198,8 +198,6 @@ public class ThreadOTTReceiver extends Thread {
                     else {
                         System.out.println("I don't know what to do");
                     }
-
-                    System.out.println(dadosNodo.getRotaFluxo().toString());
 
                 }
 
