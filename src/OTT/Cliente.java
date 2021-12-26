@@ -208,9 +208,10 @@ public class Cliente {
     class clientTimerListener implements ActionListener {
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<RTPpacket> future = executor.submit(rtPpacketQueue::remove);
 
         public void actionPerformed(ActionEvent e) {
+
+            Future<RTPpacket> future = executor.submit(rtPpacketQueue::remove);
 
             if (OTT.querVerStream && dadosNodo.getOrigemFluxo() != null) {
                 //create an RTPpacket object from the DP
