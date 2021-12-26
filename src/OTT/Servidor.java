@@ -121,6 +121,8 @@ public class Servidor extends JFrame implements ActionListener {
                 }
 
                 if (counter != counterInicial) {
+                    sTimer.stop();
+
                     imagenb = 0;
 
                     sTimer = new Timer(FRAME_PERIOD, this);
