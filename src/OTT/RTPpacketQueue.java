@@ -55,13 +55,15 @@ public class RTPpacketQueue {
      * @return  Pacote removido
      * @throws InterruptedException
      */
-    public RTPpacket remove() throws InterruptedException {
+    public RTPpacket remove(){
         lock.lock();
         try {
             while (packets.isEmpty())
                 con.await();
 
             return (packets.isEmpty() ? null : packets.remove());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         } finally {
             lock.unlock();
         }

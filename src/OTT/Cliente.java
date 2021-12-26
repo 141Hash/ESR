@@ -12,6 +12,7 @@ import java.net.*;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.concurrent.*;
 import javax.swing.*;
 import javax.swing.Timer;
 
@@ -206,54 +207,65 @@ public class Cliente {
   
     class clientTimerListener implements ActionListener {
 
+        ExecutorService executor;
+        Future<RTPpacket> future;
+
+        public clientTimerListener() {
+            this.executor = Executors.newSingleThreadExecutor();
+            this.future   = executor.submit(rtPpacketQueue::remove);
+        }
+
         public void actionPerformed(ActionEvent e) {
 
-            try {
-                if (OTT.querVerStream && dadosNodo.getOrigemFluxo() != null) {
-                    //create an RTPpacket object from the DP
-                    RTPpacket rtp_packet = rtPpacketQueue.remove();
+            if (OTT.querVerStream && dadosNodo.getOrigemFluxo() != null) {
+                //create an RTPpacket object from the DP
+                RTPpacket rtp_packet = null;
 
-                    if (rtp_packet == null) {
-                        OTT.querVerStream = false;
-                        pauseButton.setEnabled(false);
-                        playButton.setEnabled(true);
-
-                        cTimer.stop();
-                    }
-                    else if (rtp_packet.getpayloadtype() == 26) {
-                        //print important header fields of the RTP packet received:
-                        //System.out.println("Got RTP packet with SeqNum # "+rtp_packet.getsequencenumber()+" TimeStamp "+rtp_packet.gettimestamp()+" ms, of type "+rtp_packet.getpayloadtype());
-
-                        //print header bitstream:
-                        //rtp_packet.printheader();
-
-                        //get the payload bitstream from the RTPpacket object
-                        int payload_length = rtp_packet.getpayload_length();
-                        byte [] payload = new byte[payload_length];
-                        rtp_packet.getpayload(payload);
-
-                        //get an Image object from the payload bitstream
-                        Toolkit toolkit = Toolkit.getDefaultToolkit();
-                        Image image = toolkit.createImage(payload, 0, payload_length);
-
-                        //display the image as an ImageIcon object
-                        icon = new ImageIcon(image);
-                        iconLabel.setIcon(icon);
-                    }
-                    else if (rtp_packet.getpayloadtype() == 27) {
-                        cTimer.stop();
-                    }
+                try {
+                    rtp_packet = future.get(2, TimeUnit.SECONDS);
+                } catch (InterruptedException | TimeoutException exception) {
+                    rtp_packet = null;
+                } catch (ExecutionException executionException) {
+                    executionException.printStackTrace();
                 }
-                else {
+
+                if (rtp_packet == null) {
                     OTT.querVerStream = false;
                     pauseButton.setEnabled(false);
                     playButton.setEnabled(true);
 
                     cTimer.stop();
                 }
+                else if (rtp_packet.getpayloadtype() == 26) {
+                    //print important header fields of the RTP packet received:
+                    //System.out.println("Got RTP packet with SeqNum # "+rtp_packet.getsequencenumber()+" TimeStamp "+rtp_packet.gettimestamp()+" ms, of type "+rtp_packet.getpayloadtype());
+
+                    //print header bitstream:
+                    //rtp_packet.printheader();
+
+                    //get the payload bitstream from the RTPpacket object
+                    int payload_length = rtp_packet.getpayload_length();
+                    byte [] payload = new byte[payload_length];
+                    rtp_packet.getpayload(payload);
+
+                    //get an Image object from the payload bitstream
+                    Toolkit toolkit = Toolkit.getDefaultToolkit();
+                    Image image = toolkit.createImage(payload, 0, payload_length);
+
+                    //display the image as an ImageIcon object
+                    icon = new ImageIcon(image);
+                    iconLabel.setIcon(icon);
+                }
+                else if (rtp_packet.getpayloadtype() == 27) {
+                    cTimer.stop();
+                }
             }
-            catch (InterruptedException ex) {
-                ex.printStackTrace();
+            else {
+                OTT.querVerStream = false;
+                pauseButton.setEnabled(false);
+                playButton.setEnabled(true);
+
+                cTimer.stop();
             }
         }
 
