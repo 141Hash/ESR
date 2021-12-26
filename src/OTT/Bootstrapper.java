@@ -109,21 +109,33 @@ public class Bootstrapper {
 
     private static void iniciaServidorStreaming(DatagramSocket ds, PacketQueue pq, DadosNodo dadosNodo) {
 
-        String videoFileName = "../MovieFiles/movie2.Mjpeg";
+        File dirName = new File("../MovieFiles/");
+        File[] fileList = dirName.listFiles();
 
-        File f = new File(videoFileName);
+        if (dirName.exists() && fileList != null) {
+            if (fileList.length > 0) {
+                ArrayList<String> videoFaleNames = new ArrayList<>();
 
-        if (f.exists()) {
-            //Create a Main object
-            Thread threadServidor = new Thread(() -> { Servidor s = new Servidor(ds, pq, videoFileName, dadosNodo);
-                                                        //show GUI: (opcional!)
-                                                        s.pack();
-                                                        s.setVisible(true);
-            });
-            threadServidor.start();
+                for (File file: fileList) {
+                    System.out.println("\t" + file.toString());
+                    videoFaleNames.add(file.toString());
+                }
+
+                //Create a Main object
+                Thread threadServidor = new Thread(() -> { Servidor s = new Servidor(ds, pq, videoFaleNames, dadosNodo);
+                    //show GUI: (opcional!)
+                    s.pack();
+                    s.setVisible(true);
+                });
+                threadServidor.start();
+            }
+            else {
+                System.out.println("No videos to watch");
+            }
         }
-        else
-            System.out.println("Ficheiro de video não existe: " + videoFileName);
+        else {
+            System.out.println("Ficheiros de videos não encontrados");
+        }
 
     }
 

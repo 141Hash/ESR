@@ -10,6 +10,7 @@ import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Set;
 import javax.swing.*;
 import javax.swing.Timer;
@@ -31,11 +32,12 @@ public class Servidor extends JFrame implements ActionListener {
 
     int RTP_dest_port = 8888; //destination port for RTP packets
 
-    static String VideoFileName; //video file to request to the server
+    static ArrayList<String> VideoFileNames; //video file to request to the server
 
     //Video constants:
     //------------------
     int imagenb = 0; //image number of the image currently transmitted
+    int counter = 0; //contador do vídeo em que estámos
     VideoStream video; //VideoStream object used to access video frames
     static int MJPEG_TYPE = 26; //RTP payload type for MJPEG video
     static int FRAME_PERIOD = 34; //Frame period of the video to stream, in ms
@@ -49,7 +51,7 @@ public class Servidor extends JFrame implements ActionListener {
     //--------------------------
     //Constructor
     //--------------------------
-    public Servidor(DatagramSocket ds, PacketQueue pq, String videoFileName, DadosNodo dadosNodo) {
+    public Servidor(DatagramSocket ds, PacketQueue pq, ArrayList<String> videoFileNames, DadosNodo dadosNodo) {
         //init Frame
         super("Servidor");
 
@@ -64,10 +66,12 @@ public class Servidor extends JFrame implements ActionListener {
             queue          = pq; // PacketQueue
             this.dadosNodo = dadosNodo;
 
-            VideoFileName = videoFileName; // Video name
-            video         = new VideoStream(VideoFileName); //init the VideoStream object:
+            VideoFileNames = videoFileNames; // Video name
+            video         = new VideoStream(VideoFileNames.get(counter)); //init the VideoStream object:
 
-            System.out.println("Servidor: vai enviar video da file " + VideoFileName);
+            System.out.println("Servidor: vai enviar video da file " + videoFileNames.get(counter));
+
+            counter++;
         } catch (SocketException e) {
             System.out.println("Servidor: erro no socket: " + e.getMessage());
         } catch (Exception e) {
@@ -144,7 +148,7 @@ public class Servidor extends JFrame implements ActionListener {
                 sTimer.setInitialDelay(0);
                 sTimer.setCoalesce(true);
 
-                video = new VideoStream(VideoFileName);
+                video = new VideoStream(VideoFileNames.get(counter));
 
                 sTimer.start();
             }
