@@ -207,13 +207,8 @@ public class Cliente {
   
     class clientTimerListener implements ActionListener {
 
-        ExecutorService executor;
-        Future<RTPpacket> future;
-
-        public clientTimerListener() {
-            this.executor = Executors.newSingleThreadExecutor();
-            this.future   = executor.submit(rtPpacketQueue::remove);
-        }
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<RTPpacket> future = executor.submit(rtPpacketQueue::remove);
 
         public void actionPerformed(ActionEvent e) {
 

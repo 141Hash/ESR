@@ -46,7 +46,6 @@ public class ThreadOTTPedidos extends Thread {
             while (!pedido.equals("EXIT")) {
 
                 if (pedido.startsWith("PLAYER")) {
-
                     Thread threadCliente = new Thread(() -> { Cliente cli = new Cliente(ds, rtpQueue, dadosNodo); });
                     threadCliente.start();
                 }
