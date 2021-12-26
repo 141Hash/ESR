@@ -89,15 +89,15 @@ public class Servidor extends JFrame implements ActionListener {
             }
         );
 
+        button.addActionListener(new buttonListener());
+
         //GUI:
-        label = new JLabel("Send frame #        ", JLabel.CENTER);
-        getContentPane().add(label, BorderLayout.CENTER);
+        label = new JLabel("Send frame #        ", JLabel.LEFT);
         label.setPreferredSize(new Dimension(200, 30));
         label.setBorder(new LineBorder(Color.GRAY, 1));
         label.setLayout(new BorderLayout());
-        label.add(button, BorderLayout.EAST);
-        button.addActionListener(new buttonListener());
-
+        label.add(button, label.RIGHT);
+        
         sTimer.start();
     }
 
@@ -129,9 +129,9 @@ public class Servidor extends JFrame implements ActionListener {
 
                     video = new VideoStream(VideoFileNames.get(counter));
 
-                    sTimer.start();
                 }
 
+                sTimer.start();
             }
             catch (Exception exception) {
                 exception.printStackTrace();
