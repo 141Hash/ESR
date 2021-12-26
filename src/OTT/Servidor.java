@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import javax.swing.*;
 import javax.swing.Timer;
-
+import javax.swing.border.LineBorder;
 
 
 public class Servidor extends JFrame implements ActionListener {
@@ -22,6 +22,7 @@ public class Servidor extends JFrame implements ActionListener {
     //GUI:
     //----------------
     JLabel label;
+    final JButton button = new JButton("ChangeVideo!");
 
     //RTP variables:
     //----------------
@@ -71,7 +72,6 @@ public class Servidor extends JFrame implements ActionListener {
 
             System.out.println("Servidor: vai enviar video da file " + videoFileNames.get(counter));
 
-            counter++;
         } catch (SocketException e) {
             System.out.println("Servidor: erro no socket: " + e.getMessage());
         } catch (Exception e) {
@@ -92,8 +92,53 @@ public class Servidor extends JFrame implements ActionListener {
         //GUI:
         label = new JLabel("Send frame #        ", JLabel.CENTER);
         getContentPane().add(label, BorderLayout.CENTER);
+        label.setPreferredSize(new Dimension(200, 30));
+        label.setBorder(new LineBorder(Color.GRAY, 1));
+        label.setLayout(new BorderLayout());
+        label.add(button, BorderLayout.EAST);
+        button.addActionListener(new buttonListener());
 
         sTimer.start();
+    }
+
+    //------------------------------------
+    //Handler for buttons
+    //------------------------------------
+
+    //Handler for Change Video button
+    //-----------------------
+    class buttonListener implements ActionListener {
+
+        public void actionPerformed (ActionEvent e) {
+            try {
+                sTimer.stop();
+
+                int counterInicial = counter;
+                counter++;
+
+                if (counter >= VideoFileNames.size()) {
+                    counter = 0;
+                }
+
+                if (counter != counterInicial) {
+                    imagenb = 0;
+
+                    sTimer = new Timer(FRAME_PERIOD, this);
+                    sTimer.setInitialDelay(0);
+                    sTimer.setCoalesce(true);
+
+                    video = new VideoStream(VideoFileNames.get(counter));
+
+                    sTimer.start();
+                }
+
+            }
+            catch (Exception exception) {
+                exception.printStackTrace();
+            }
+
+        }
+
     }
 
 
