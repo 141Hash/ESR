@@ -67,7 +67,7 @@ public class ThreadOTTPedidos extends Thread {
                     this.dadosNodo.getVizinho(vizinho).getMessagesToSend().signalCon();
             }
 
-            Runtime.getRuntime().halt(0);
+            System.exit(0);
 
         }
         catch (IOException | InterruptedException ignored) { }

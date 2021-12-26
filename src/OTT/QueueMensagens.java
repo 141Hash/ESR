@@ -41,7 +41,7 @@ public class QueueMensagens {
             while (messagesToSend.isEmpty())
                 con.await();
 
-            return messagesToSend.isEmpty() ? null : messagesToSend.remove();
+            return (messagesToSend.isEmpty() ? null : messagesToSend.remove());
         } finally {
             lock.unlock();
         }

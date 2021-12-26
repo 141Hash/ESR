@@ -61,7 +61,7 @@ public class PacketQueue {
             while (packets.isEmpty())
                 con.await();
 
-            return packets.isEmpty() ? null : packets.remove();
+            return (packets.isEmpty() ? null : packets.remove());
         } finally {
             lock.unlock();
         }
