@@ -66,6 +66,7 @@ public class Cliente {
         // handlers... (so dois)
         playButton.addActionListener(new playButtonListener(dadosNodo));
         pauseButton.addActionListener(new pauseButtonListener(dadosNodo));
+        pauseButton.setEnabled(false);
         tearButton.addActionListener(new tearButtonListener(dadosNodo));
 
         //Image display label
@@ -122,6 +123,8 @@ public class Cliente {
 
                     System.out.println("Play Button pressed !");
                     //start the timers ...
+                    pauseButton.setEnabled(true);
+                    playButton.setEnabled(false);
                     cTimer.start();
                 } else {
                     System.out.println("Não se encontra ligado a nenhum Nodo de momento");
@@ -152,7 +155,9 @@ public class Cliente {
                     this.dadosNodo.getVizinho(this.dadosNodo.getOrigemFluxo()).addMessagesToSend("PauseVideo#" + InetAddress.getLocalHost().getHostAddress() + "\n");
 
                     System.out.println("Play Pause pressed !");
-                    //start the timers ...
+                    //stops the timers ...
+                    pauseButton.setEnabled(false);
+                    playButton.setEnabled(true);
                     cTimer.stop();
                 }
             } catch (UnknownHostException unknownHostException) {
@@ -210,6 +215,8 @@ public class Cliente {
 
                     if (rtp_packet == null) {
                         OTT.querVerStream = false;
+                        pauseButton.setEnabled(false);
+                        playButton.setEnabled(true);
 
                         cTimer.stop();
                     }
@@ -239,6 +246,8 @@ public class Cliente {
                 }
                 else {
                     OTT.querVerStream = false;
+                    pauseButton.setEnabled(false);
+                    playButton.setEnabled(true);
 
                     cTimer.stop();
                 }

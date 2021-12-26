@@ -38,7 +38,7 @@ public class ThreadOTTPedidos extends Thread {
     public void run() {
 
         try {
-            startPingingThread();
+            //startPingingThread();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String pedido = reader.readLine();
