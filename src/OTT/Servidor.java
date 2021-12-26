@@ -93,10 +93,11 @@ public class Servidor extends JFrame implements ActionListener {
 
         //GUI:
         label = new JLabel("Send frame #        ", JLabel.LEFT);
+        getContentPane().add(label, BorderLayout.CENTER);
         label.setPreferredSize(new Dimension(400, 50));
         label.setBorder(new LineBorder(Color.GRAY, 1));
         label.setLayout(new BorderLayout());
-        label.add(button, JLabel.RIGHT);
+        label.add(button, BorderLayout.EAST);
 
         sTimer.start();
     }
