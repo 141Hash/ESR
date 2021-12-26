@@ -29,8 +29,25 @@ public class ThreadOTTPedidos extends Thread {
             while (!pedido.equals("EXIT")) {
 
                 if (pedido.startsWith("PLAYER")) {
-                    Thread threadCliente = new Thread(() -> { Cliente cli = new Cliente(ds, rtpQueue, dadosNodo); });
+
+                    Thread threadCliente = new Thread(() -> {
+                        Cliente cli = new Cliente(ds, rtpQueue, dadosNodo);
+                    });
+
+                    Thread pingQueue = new Thread(() -> {
+                        if (rtpQueue.isEmpty() && OTT.querVerStream) {
+                            try {
+                                Thread.sleep(2000);
+                                rtpQueue.signalCon();
+                                System.out.println("Sended ping to get out");
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
                     threadCliente.start();
+                    pingQueue.start();
                 }
 
                 System.out.println(pedido);
