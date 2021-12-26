@@ -64,6 +64,7 @@ public class RTPpacketQueue {
             return (packets.isEmpty() ? null : packets.remove());
         } catch (InterruptedException e) {
             e.printStackTrace();
+            return null;
         } finally {
             lock.unlock();
         }
