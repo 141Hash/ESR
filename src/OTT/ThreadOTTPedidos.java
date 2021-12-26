@@ -70,7 +70,9 @@ public class ThreadOTTPedidos extends Thread {
             System.exit(0);
 
         }
-        catch (IOException | InterruptedException ignored) { }
+        catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
 
     }
 
