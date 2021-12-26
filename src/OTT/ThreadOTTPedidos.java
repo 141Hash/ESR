@@ -33,7 +33,7 @@ public class ThreadOTTPedidos extends Thread {
                     Thread threadCliente = new Thread(() -> {
                         Cliente cli = new Cliente(ds, rtpQueue, dadosNodo);
                     });
-
+/*
                     Thread pingQueue = new Thread(() -> {
                         try {
                             while (true) {
@@ -48,15 +48,17 @@ public class ThreadOTTPedidos extends Thread {
                         }
                     });
 
+ */
+
                     threadCliente.start();
-                    pingQueue.start();
+                    //pingQueue.start();
                 }
 
                 System.out.println(pedido);
                 pedido = reader.readLine();
             }
 
-            for (String vizinho: this.dadosNodo.getIpsVizinhos()) {
+            for (String vizinho : this.dadosNodo.getIpsVizinhos()) {
                 if (this.dadosNodo.getVizinho(vizinho) != null)
                     this.dadosNodo.getVizinho(vizinho).addMessagesToSend("Leaving#" + InetAddress.getLocalHost().getHostAddress() + "\n");
             }
@@ -64,7 +66,7 @@ public class ThreadOTTPedidos extends Thread {
             Thread.sleep(1000);
             OTT.EXIT = true;
 
-            for (String vizinho: this.dadosNodo.getIpsVizinhos()) {
+            for (String vizinho : this.dadosNodo.getIpsVizinhos()) {
                 if (this.dadosNodo.getVizinho(vizinho) != null)
                     this.dadosNodo.getVizinho(vizinho).getMessagesToSend().signalCon();
             }

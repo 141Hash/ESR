@@ -158,7 +158,7 @@ public class ThreadOTTReceiver extends Thread {
 
         try {
             Thread.sleep(500);
-            rtPpacketQueue.signalCon();
+            rtPpacketQueue.sionalIfEmpty();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
