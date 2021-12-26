@@ -112,7 +112,6 @@ public class Servidor extends JFrame implements ActionListener {
 
         public void actionPerformed (ActionEvent e) {
             try {
-                sTimer.stop();
 
                 int counterInicial = counter;
                 counter++;
@@ -130,9 +129,9 @@ public class Servidor extends JFrame implements ActionListener {
 
                     video = new VideoStream(VideoFileNames.get(counter));
 
+                    sTimer.start();
                 }
 
-                sTimer.start();
             }
             catch (Exception exception) {
                 exception.printStackTrace();
@@ -146,7 +145,7 @@ public class Servidor extends JFrame implements ActionListener {
     //------------------------
     //Handler for timer
     //------------------------
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed (ActionEvent e) {
 
         try {
             //if the current image nb is less than the length of the video
@@ -198,7 +197,7 @@ public class Servidor extends JFrame implements ActionListener {
 
                 sTimer.start();
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             System.out.println("Exception caught: "+ex);
             System.exit(0);
         }
