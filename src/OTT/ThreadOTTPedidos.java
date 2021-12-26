@@ -20,9 +20,26 @@ public class ThreadOTTPedidos extends Thread {
         this.dadosNodo = dadosNodo;
     }
 
+    public void startPingingThread () {
+        // Thread that sends pings from time to time, so that, if an OTT is stuck in a Swing Gui, it can get out!
+        Thread pingQueue = new Thread(() -> {
+            try {
+                while (true) {
+                    Thread.sleep(2000);
+                    rtpQueue.sionalIfEmpty();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        pingQueue.start();
+    }
+
     public void run() {
 
         try {
+            startPingingThread();
+
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String pedido = reader.readLine();
 
@@ -30,31 +47,10 @@ public class ThreadOTTPedidos extends Thread {
 
                 if (pedido.startsWith("PLAYER")) {
 
-                    Thread threadCliente = new Thread(() -> {
-                        Cliente cli = new Cliente(ds, rtpQueue, dadosNodo);
-                    });
-/*
-                    Thread pingQueue = new Thread(() -> {
-                        try {
-                            while (true) {
-                                Thread.sleep(2000);
-                                if (rtpQueue.isEmpty() && OTT.querVerStream) {
-                                    rtpQueue.sionalIfEmpty();
-                                    System.out.println("Sended ping to get out");
-                                }
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    });
-
- */
-
+                    Thread threadCliente = new Thread(() -> { Cliente cli = new Cliente(ds, rtpQueue, dadosNodo); });
                     threadCliente.start();
-                    //pingQueue.start();
                 }
 
-                System.out.println(pedido);
                 pedido = reader.readLine();
             }
 
