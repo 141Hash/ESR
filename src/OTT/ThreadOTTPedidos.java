@@ -35,14 +35,16 @@ public class ThreadOTTPedidos extends Thread {
                     });
 
                     Thread pingQueue = new Thread(() -> {
-                        if (rtpQueue.isEmpty() && OTT.querVerStream) {
-                            try {
+                        try {
+                            while (true) {
                                 Thread.sleep(2000);
-                                rtpQueue.signalCon();
-                                System.out.println("Sended ping to get out");
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
+                                if (rtpQueue.isEmpty() && OTT.querVerStream) {
+                                    rtpQueue.sionalIfEmpty();
+                                    System.out.println("Sended ping to get out");
+                                }
                             }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
                     });
 

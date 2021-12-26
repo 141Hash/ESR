@@ -61,7 +61,7 @@ public class RTPpacketQueue {
             while (packets.isEmpty())
                 con.await();
 
-            return packets.isEmpty() ? null : packets.remove();
+            return (packets.isEmpty() ? null : packets.remove());
         } finally {
             lock.unlock();
         }
@@ -90,6 +90,19 @@ public class RTPpacketQueue {
             while(!packets.isEmpty());
 
             con.signalAll();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Método que envia um sinal quando a queue estiver vazia
+     */
+    public void sionalIfEmpty() {
+        lock.lock();
+        try {
+            if(packets.isEmpty());
+                con.signalAll();
         } finally {
             lock.unlock();
         }
