@@ -191,7 +191,7 @@ public class Cliente {
                 cTimer.stop();
                 Runtime.getRuntime().halt(0);
 
-            } catch (InterruptedException | UnknownHostException ignored) { }
+            } catch (InterruptedException | UnknownHostException ex) { ex.printStackTrace(); }
         }
     }
 
@@ -243,7 +243,9 @@ public class Cliente {
                     cTimer.stop();
                 }
             }
-            catch (InterruptedException ignored) { }
+            catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
         }
 
     }
