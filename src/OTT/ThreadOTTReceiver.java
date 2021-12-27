@@ -195,9 +195,7 @@ public class ThreadOTTReceiver extends Thread {
                 }
 
 		    }
-	    } catch (IOException | InterruptedException e) {
-    	    e.printStackTrace();
-        }
+	    } catch (IOException | InterruptedException ignored) { }
     }
 
 
