@@ -221,6 +221,8 @@ public class Cliente {
                     rtp_packet = future.get(2, TimeUnit.SECONDS);
                 } catch (InterruptedException | TimeoutException exception) {
                     rtp_packet = null;
+                    if (dadosNodo.getOrigemFluxo() != null)
+                        System.out.println("Não consegue receber a Stream no momento");
                 } catch (ExecutionException executionException) {
                     executionException.printStackTrace();
                 }
