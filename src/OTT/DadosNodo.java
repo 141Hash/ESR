@@ -204,4 +204,12 @@ public class DadosNodo {
         }
     }
 
+    @Override
+    public String toString() {
+        return "DadosNodo{" +
+                "vizinhos=" + vizinhos.toString() +
+                ", rotaFluxo=" + rotaFluxo.toString() +
+                ", destinosQueremVerStream=" + destinosQueremVerStream.toString() +
+                '}';
+    }
 }

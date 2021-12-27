@@ -42,7 +42,6 @@ public class ThreadOTTReceiver extends Thread {
                         dadosNodo.getRotaFluxo().addDestinoVizinho(vizinho);
                     }
                 }
-                System.out.println(dadosNodo.getRotaFluxo().toString());
             }
 
             else if (!ipOrigem.equals(dadosNodo.getOrigemFluxo())) {
@@ -182,7 +181,6 @@ public class ThreadOTTReceiver extends Thread {
                     }
                     else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("Leaving")) {
                         removeNodeThatLeft(mensagemControlo);
-                        System.out.println("Leaving" + mensagemControlo[1]);
                     }
                     else if (mensagemControlo.length == 2 && mensagemControlo[0].equals("GetVideo")) {
                         enviaPedidoParaVerStream(mensagemControlo);

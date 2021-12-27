@@ -70,7 +70,7 @@ public class Servidor extends JFrame {
             VideoFileNames = videoFileNames; // Video name
             video         = new VideoStream(VideoFileNames.get(counter)); //init the VideoStream object:
 
-            System.out.println("Servidor: vai enviar video da file " + videoFileNames.get(counter));
+            System.out.println("Servidor: vai enviar video da file " + VideoFileNames.get(counter));
 
         } catch (SocketException e) {
             System.out.println("Servidor: erro no socket: " + e.getMessage());
@@ -133,6 +133,7 @@ public class Servidor extends JFrame {
 
                 }
 
+                System.out.println("Servidor: vai enviar video da file " + VideoFileNames.get(counter));
                 sTimer.start();
             }
             catch (Exception exception) {
